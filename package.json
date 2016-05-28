@@ -37,5 +37,9 @@
     "commitizen": {
       "path": "cz-conventional-changelog"
     }
+  },
+  "dependencies": {
+    "opn": "^4.0.2",
+    "ramda": "^0.21.0"
   }
 }

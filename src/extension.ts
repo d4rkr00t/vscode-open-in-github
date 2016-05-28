@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 const exec = require('child_process').exec;
 const path = require('path');
 const opn = require('opn');
+const R = require('ramda');
 
 const BRANCH_URL_SEP = '\t—\t';
 
@@ -44,20 +45,21 @@ export function activate(context: vscode.ExtensionContext) {
  * @return {Promise<String[]>}
  */
 export function getRemotes(exec, projectPath: string) : Promise<string[]> {
+  const process = R.compose(
+    R.uniq,
+    R.map(R.head),
+    R.map(R.split(' ')),
+    R.reject(R.isEmpty),
+    R.map(R.last),
+    R.map(R.split(/\t/)),
+    R.split('\n')
+  );
+
   return new Promise((resolve, reject) => {
     exec('git remote -v', { cwd: projectPath }, (error, stdout, stderr) => {
       if (stderr || error) return reject(stderr || error);
 
-      const remotes = stdout
-        .split('\n')
-        .map(line => line.split(/\t/))
-        .map(line => line[1])
-        .filter(line => line)
-        .map(line => line.split(' '))
-        .map(line => line[0])
-        .reduce((acc, line) => acc.indexOf(line) === -1 ? acc.concat([line]) : acc, []);
-
-      resolve(remotes);
+      resolve(process(stdout));
     });
   });
 }
@@ -70,25 +72,29 @@ export function getRemotes(exec, projectPath: string) : Promise<string[]> {
  * @return {String[]}
  */
 export function formatRemotes(remotes: string[]) : string[] {
-  return remotes.map(rem => {
-    if (rem.match(/^https?:/)) {
-      return rem;
-    } else if (rem.match(/@/)) {
-      return 'https://' +
-        rem
-          .replace(/^.+@/, '')
-          .replace(/\.git$/, '')
-          .replace(/:/g, '/');
-    } else if (rem.match(/^ftps?:/)) {
-      return rem.replace(/^ftp/, 'http');
-    } else if (rem.match(/^ssh:/)) {
-      return rem.replace(/^ssh/, 'https');
-    } else if (rem.match(/^git:/)) {
-      return rem.replace(/^git/, 'https');
-    }
-  })
-  .filter(rem => !!rem)
-  .map(rem => rem.replace(/\/$/, ''));
+  const process = R.compose(
+    R.map(R.replace(/\/$/, '')),
+    R.reject(R.isEmpty),
+    R.map(rem => {
+      if (rem.match(/^https?:/)) {
+        return rem;
+      } else if (rem.match(/@/)) {
+        return 'https://' +
+          rem
+            .replace(/^.+@/, '')
+            .replace(/\.git$/, '')
+            .replace(/:/g, '/');
+      } else if (rem.match(/^ftps?:/)) {
+        return rem.replace(/^ftp/, 'http');
+      } else if (rem.match(/^ssh:/)) {
+        return rem.replace(/^ssh/, 'https');
+      } else if (rem.match(/^git:/)) {
+        return rem.replace(/^git/, 'https');
+      }
+    })
+  );
+
+  return process(remotes);
 }
 
 /**
@@ -106,13 +112,14 @@ export function getCurrentBranch(exec, projectPath: string) : Promise<string> {
     exec('git branch --no-color', { cwd: projectPath }, (error, stdout, stderr) => {
       if (stderr || error) return reject(stderr || error);
 
-      const branch = stdout
-        .split('\n')
-        .find(line => line.startsWith('*'))
-        .replace('*', '')
-        .trim();
+      const process = R.compose(
+        R.trim,
+        R.replace('*', ''),
+        R.find(line => line.startsWith('*')),
+        R.split('\n')
+      );
 
-      resolve(branch);
+      resolve(process(stdout));
     });
   });
 }
@@ -151,13 +158,7 @@ export function prepareQuickPickItems(relativeFilePath: string, line: number, ma
   const currentBranchQuickPickList = formatQuickPickItems(relativeFilePath, line, remotes, branch);
   const masterBranchQuickPickList = formatQuickPickItems(relativeFilePath, line, remotes, masterBranch);
 
-  return [].concat(currentBranchQuickPickList).reduce(acc => {
-    acc.push(
-      currentBranchQuickPickList.shift(),
-      masterBranchQuickPickList.shift()
-    );
-    return acc;
-  }, []);
+  return R.flatten(R.zip(currentBranchQuickPickList, masterBranchQuickPickList));
 }
 
 /**
@@ -185,8 +186,6 @@ export function showQuickPickWindow(quickPickList: string[]) {
  */
 export function openQuickPickItem(item: string) {
   const fileUrl = item.split(BRANCH_URL_SEP)[1];
-
-  console.log(fileUrl);
 
   opn(fileUrl);
 }

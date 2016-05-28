@@ -3,6 +3,7 @@ import * as vscode from 'vscode';
 
 const exec = require('child_process').exec;
 const path = require('path');
+const opn = require('opn');
 
 const BRANCH_URL_SEP = '\t—\t';
 
@@ -18,12 +19,13 @@ export function activate(context: vscode.ExtensionContext) {
     const filePath = vscode.window.activeTextEditor.document.fileName;
     const projectPath = vscode.workspace.rootPath;
     const relativeFilePath = path.relative(projectPath, filePath);
+    const line = vscode.window.activeTextEditor.selection.start.line + 1;
 
     const getRemotesPromise = getRemotes(exec, projectPath).then(formatRemotes);
     const getCurrentBranchPromise = getCurrentBranch(exec, projectPath);
 
     Promise.all([getRemotesPromise, getCurrentBranchPromise])
-      .then(prepareQuickPickItems.bind(null, relativeFilePath, 'master'))
+      .then(prepareQuickPickItems.bind(null, relativeFilePath, line, 'master'))
       .then(showQuickPickWindow)
       .catch(err => vscode.window.showErrorMessage(err));
   });
@@ -124,9 +126,9 @@ export function getCurrentBranch(exec, projectPath: string) : Promise<string> {
  *
  * @return {String[]}
  */
-export function formatQuickPickItems(relativeFilePath: string, remotes: string[], branch: string): string[] {
+export function formatQuickPickItems(relativeFilePath: string, line: number, remotes: string[], branch: string): string[] {
   return remotes
-    .map(r => `${r}/blob/${branch}/${relativeFilePath}`)
+    .map(r => `${r}/blob/${branch}/${relativeFilePath}#L${line || 1}`)
     .map(r => `[${branch}]${BRANCH_URL_SEP}${r}`);
 }
 
@@ -134,19 +136,20 @@ export function formatQuickPickItems(relativeFilePath: string, remotes: string[]
  * Builds quick pick items list.
  *
  * @param {String} relativeFilePath
+ * @param {Number} line
  * @param {String} masterBranch
  *
  * @return {String[]}
  */
-export function prepareQuickPickItems(relativeFilePath: string, masterBranch: string, [remotes, branch]: [string[], string]) : string[] {
+export function prepareQuickPickItems(relativeFilePath: string, line: number, masterBranch: string, [remotes, branch]: [string[], string]) : string[] {
   // https://github.com/elm-lang/navigation/blob/master/src/Navigation.elm
 
   if (masterBranch === branch) {
-    return formatQuickPickItems(relativeFilePath, remotes, branch);
+    return formatQuickPickItems(relativeFilePath, line, remotes, branch);
   }
 
-  const currentBranchQuickPickList = formatQuickPickItems(relativeFilePath, remotes, branch);
-  const masterBranchQuickPickList = formatQuickPickItems(relativeFilePath, remotes, masterBranch);
+  const currentBranchQuickPickList = formatQuickPickItems(relativeFilePath, line, remotes, branch);
+  const masterBranchQuickPickList = formatQuickPickItems(relativeFilePath, line, remotes, masterBranch);
 
   return [].concat(currentBranchQuickPickList).reduce(acc => {
     acc.push(
@@ -185,5 +188,5 @@ export function openQuickPickItem(item: string) {
 
   console.log(fileUrl);
 
-  exec('open ' + fileUrl);
+  opn(fileUrl);
 }

@@ -1,32 +1,41 @@
 {
-    "name": "open-in-gh",
-    "displayName": "open-in-gh",
-    "description": "Open current file in github",
-    "version": "0.0.1",
-    "publisher": "sysoev",
-    "engines": {
-        "vscode": "^1.0.0"
-    },
-    "categories": [
-        "Other"
-    ],
-    "activationEvents": [
-        "onCommand:extension.openInGitHub"
-    ],
-    "main": "./out/src/extension",
-    "contributes": {
-        "commands": [{
-            "command": "extension.openInGitHub",
-            "title": "Open file in GitHub"
-        }]
-    },
-    "scripts": {
-        "vscode:prepublish": "node ./node_modules/vscode/bin/compile",
-        "compile": "node ./node_modules/vscode/bin/compile -watch -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install"
-    },
-    "devDependencies": {
-        "typescript": "^1.8.5",
-        "vscode": "^0.11.0"
+  "name": "vscode-open-in-github",
+  "displayName": "vscode-open-in-github",
+  "description": "Open current file in github",
+  "version": "0.0.1",
+  "publisher": "sysoev",
+  "engines": {
+    "vscode": "^1.0.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:extension.openInGitHub"
+  ],
+  "main": "./out/src/extension",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.openInGitHub",
+        "title": "Open file in GitHub"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "node ./node_modules/vscode/bin/compile",
+    "compile": "node ./node_modules/vscode/bin/compile -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install"
+  },
+  "devDependencies": {
+    "commitizen": "^2.8.1",
+    "cz-conventional-changelog": "^1.1.6",
+    "typescript": "^1.8.5",
+    "vscode": "^0.11.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
     }
+  }
 }

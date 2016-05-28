@@ -68,23 +68,25 @@ export function getRemotes(exec, projectPath: string) : Promise<string[]> {
  * @return {String[]}
  */
 export function formatRemotes(remotes: string[]) : string[] {
-  // "git@github.com:d4rkr00t/language-stylus.git"
-  // "git@github.yandex-team.ru:search-interfaces/web4.git",
-  // "https://github.yandex-team.ru/serp/web4"
-  // "https://github.com/d4rkr00t/language-stylus"
-  // ssh://[user@]host.xz[:port]/path/to/repo.git/
-  // git://host.xz[:port]/path/to/repo.git/
-  // http[s]://host.xz[:port]/path/to/repo.git/
-  // ftp[s]://host.xz[:port]/path/to/repo.git/
-
   return remotes.map(rem => {
     if (rem.match(/^https?:/)) {
       return rem;
     } else if (rem.match(/@/)) {
-      return 'https://' + rem.replace(/^.+@/, '').replace(/\.git$/, '').replace(/:/g, '/');
+      return 'https://' +
+        rem
+          .replace(/^.+@/, '')
+          .replace(/\.git$/, '')
+          .replace(/:/g, '/');
+    } else if (rem.match(/^ftps?:/)) {
+      return rem.replace(/^ftp/, 'http');
+    } else if (rem.match(/^ssh:/)) {
+      return rem.replace(/^ssh/, 'https');
+    } else if (rem.match(/^git:/)) {
+      return rem.replace(/^git/, 'https');
     }
   })
-  .filter(rem => !!rem);
+  .filter(rem => !!rem)
+  .map(rem => rem.replace(/\/$/, ''));
 }
 
 /**
@@ -114,7 +116,7 @@ export function getCurrentBranch(exec, projectPath: string) : Promise<string> {
 }
 
 /**
- * Formates items for quic pick view.
+ * Formates items for quick pick view.
  *
  * @param {String} relativeFilePath
  * @param {String[]} remotes

@@ -20,7 +20,18 @@
         "command": "extension.openInGitHub",
         "title": "Open file in GitHub"
       }
-    ]
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Which branch is default in your repository.",
+      "properties": {
+        "openInGitHub.defaultBranch": {
+          "type": "string",
+          "default": "master",
+          "description": "Controls which branch will be treated as default."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "node ./node_modules/vscode/bin/compile",

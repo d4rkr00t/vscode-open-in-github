@@ -21,12 +21,13 @@ export function activate(context: vscode.ExtensionContext) {
     const projectPath = vscode.workspace.rootPath;
     const relativeFilePath = path.relative(projectPath, filePath);
     const line = vscode.window.activeTextEditor.selection.start.line + 1;
+    const defaultBranch = vscode.workspace.getConfiguration('openInGitHub').get('defaultBranch') || 'master';
 
     const getRemotesPromise = getRemotes(exec, projectPath).then(formatRemotes);
     const getCurrentBranchPromise = getCurrentBranch(exec, projectPath);
 
     Promise.all([getRemotesPromise, getCurrentBranchPromise])
-      .then(prepareQuickPickItems.bind(null, relativeFilePath, line, 'master'))
+      .then(prepareQuickPickItems.bind(null, relativeFilePath, line, defaultBranch))
       .then(showQuickPickWindow)
       .catch(err => vscode.window.showErrorMessage(err));
   });
@@ -185,7 +186,5 @@ export function showQuickPickWindow(quickPickList: string[]) {
  * @param {String} item
  */
 export function openQuickPickItem(item: string) {
-  const fileUrl = item.split(BRANCH_URL_SEP)[1];
-
-  opn(fileUrl);
+  opn(item.split(BRANCH_URL_SEP)[1]);
 }

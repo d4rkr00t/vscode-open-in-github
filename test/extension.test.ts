@@ -93,7 +93,34 @@ suite('#getCurrentBranch', () => {
 
 suite('#formatQuickPickItems', () => {
   test('should format strings for quick pick view', () => {
-    const results = ext.formatQuickPickItems('rel/path/to/file.js', ['https://remote.url'], 'master');
-    assert.equal(results[0], '[master]\t—\thttps://remote.url/blob/master/rel/path/to/file.js');
+    const results = ext.formatQuickPickItems('rel/path/to/file.js', 10, ['https://remote.url'], 'master');
+    assert.equal(results[0], '[master]\t—\thttps://remote.url/blob/master/rel/path/to/file.js#L10');
+  });
+});
+
+suite('#prepareQuickPickItems', () => {
+  suite('if current branch and master branch are equal', () => {
+    test('should return only 1 item if there is only 1 remote', () => {
+      const result = ext.prepareQuickPickItems('file.js', 10, 'master', [['https://rem'], 'master']);
+      assert.equal(result.length, 1);
+    });
+
+    test('should return number of quick pick items equal to number of remotes', () => {
+      const result = ext.prepareQuickPickItems('file.js', 10, 'master', [['https://rem', 'https://rem2'], 'master']);
+      assert.equal(result.length, 2);
+    });
+  });
+
+  suite('if current branch and master branch are not equal', () => {
+    const result = ext.prepareQuickPickItems('file.js', 10, 'master', [['https://rem', 'https://rem2'], 'feat']);
+
+    test('should merge quick pick items for current branch and master branch', () => {
+      assert.equal(result.length, 4);
+    });
+
+    test('should merge quick pick items for current branch and master branch in correct order', () => {
+      assert.ok(result[0].startsWith('[feat]'));
+      assert.ok(result[1].startsWith('[master]'));
+    });
   });
 });

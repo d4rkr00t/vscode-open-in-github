@@ -1,13 +1,43 @@
-# README
-## This is the README for your extension "open-in-gh"
-You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
+# Open in GitHub
 
-* Split the editor (`Cmd+\` on OSX or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on OSX or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (OSX) to see a list of Markdown snippets
+[![github-issues](https://img.shields.io/github/issues/d4rkr00t/vscode-open-in-github.svg)](https://github.com/d4rkr00t/vscode-open-in-github/issues)
+[![commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cl)
 
-### For more information
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+Provides commands to quickly view the current file on GitHub.
 
-**Enjoy!**
+## Usage
+When editing a file, use the command palette (cmd + shift + p / ctrl + shift + p) to:
+
+* Open the file in GitHub — "Open In GitHub: File"
+
+![Commands](assets/commands.png)
+![Multiple remotes](assets/multiple-remotes-and-branches.png)
+
+## Features
+
+* Supports multiple remotes and branches.
+* Supports in-house GitHub installations.
+* Should work fine with other providers like Bitbucket etc.
+* Configurable default branch.
+
+## Configuration
+
+Add these lines to the workspace settings:
+
+```json
+{
+  ...
+  "openInGitHub.defaultBranch": "dev", // Set default branch, default: master
+  ...
+}
+```
+
+## TODO
+* Open File Blame
+* Open File History
+* Open Repository
+* Open Pull Request related to the file
+
+## Links
+
+Logo taken from here: [https://octodex.github.com/](https://octodex.github.com/)

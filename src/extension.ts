@@ -9,7 +9,7 @@ const R = require('ramda');
 const BRANCH_URL_SEP = '\t—\t';
 
 export function activate(context: vscode.ExtensionContext) {
-  const disposable = vscode.commands.registerCommand('extension.openInGitHub', () => {
+  const disposable = vscode.commands.registerCommand('extension.openInGitHubFile', () => {
     const activeTextEditor = vscode.window.activeTextEditor;
 
     if (!activeTextEditor) {

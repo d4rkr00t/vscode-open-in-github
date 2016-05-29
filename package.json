@@ -1,8 +1,8 @@
 {
   "name": "vscode-open-in-github",
   "displayName": "vscode-open-in-github",
-  "description": "Open current file in github",
-  "version": "0.0.1",
+  "description": "Provides commands to quickly view the current file on GitHub.",
+  "version": "1.0.0",
   "publisher": "sysoev",
   "engines": {
     "vscode": "^1.0.0"
@@ -10,20 +10,32 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-    "onCommand:extension.openInGitHub"
+  "keywords": [
+    "vscode",
+    "github",
+    "bitbucket"
   ],
+  "homepage": "https://github.com/d4rkr00t/vscode-open-in-github",
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/d4rkr00t/vscode-open-in-github.git"
+  },
+  "bugs": "https://github.com/d4rkr00t/vscode-open-in-github/issues",
   "main": "./out/src/extension",
+  "icon": "assets/icon.jpg",
+  "activationEvents": [
+    "onCommand:extension.openInGitHubFile"
+  ],
   "contributes": {
     "commands": [
       {
-        "command": "extension.openInGitHub",
-        "title": "Open file in GitHub"
+        "command": "extension.openInGitHubFile",
+        "title": "Open In GitHub: File"
       }
     ],
     "configuration": {
       "type": "object",
-      "title": "Which branch is default in your repository.",
+      "title": "Which branch is default in repository.",
       "properties": {
         "openInGitHub.defaultBranch": {
           "type": "string",

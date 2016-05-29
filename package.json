@@ -1,68 +1,68 @@
 {
-  "name": "vscode-open-in-github",
-  "displayName": "Open In GitHub",
-  "description": "Provides commands to quickly view the current file on GitHub.",
-  "version": "1.0.0",
-  "publisher": "sysoev",
-  "engines": {
-    "vscode": "^1.0.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "keywords": [
-    "vscode",
-    "github",
-    "bitbucket"
-  ],
-  "homepage": "https://github.com/d4rkr00t/vscode-open-in-github",
-  "repository": {
-      "type": "git",
-      "url": "https://github.com/d4rkr00t/vscode-open-in-github.git"
-  },
-  "bugs": "https://github.com/d4rkr00t/vscode-open-in-github/issues",
-  "main": "./out/src/extension",
-  "icon": "assets/icon.jpg",
-  "activationEvents": [
-    "onCommand:extension.openInGitHubFile"
-  ],
-  "contributes": {
-    "commands": [
-      {
-        "command": "extension.openInGitHubFile",
-        "title": "Open In GitHub: File"
-      }
+    "name": "vscode-open-in-github",
+    "displayName": "Open In GitHub",
+    "description": "Provides commands to quickly view the current file on GitHub.",
+    "version": "1.0.1",
+    "publisher": "sysoev",
+    "engines": {
+        "vscode": "^1.0.0"
+    },
+    "categories": [
+        "Other"
     ],
-    "configuration": {
-      "type": "object",
-      "title": "Which branch is default in repository.",
-      "properties": {
-        "openInGitHub.defaultBranch": {
-          "type": "string",
-          "default": "master",
-          "description": "Controls which branch will be treated as default."
+    "keywords": [
+        "vscode",
+        "github",
+        "bitbucket"
+    ],
+    "homepage": "https://github.com/d4rkr00t/vscode-open-in-github",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/d4rkr00t/vscode-open-in-github.git"
+    },
+    "bugs": "https://github.com/d4rkr00t/vscode-open-in-github/issues",
+    "main": "./out/src/extension",
+    "icon": "assets/icon.jpg",
+    "activationEvents": [
+        "onCommand:extension.openInGitHubFile"
+    ],
+    "contributes": {
+        "commands": [
+            {
+                "command": "extension.openInGitHubFile",
+                "title": "Open In GitHub: File"
+            }
+        ],
+        "configuration": {
+            "type": "object",
+            "title": "Which branch is default in repository.",
+            "properties": {
+                "openInGitHub.defaultBranch": {
+                    "type": "string",
+                    "default": "master",
+                    "description": "Controls which branch will be treated as default."
+                }
+            }
         }
-      }
+    },
+    "scripts": {
+        "vscode:prepublish": "node ./node_modules/vscode/bin/compile",
+        "compile": "node ./node_modules/vscode/bin/compile -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install"
+    },
+    "devDependencies": {
+        "commitizen": "^2.8.1",
+        "cz-conventional-changelog": "^1.1.6",
+        "typescript": "^1.8.5",
+        "vscode": "^0.11.0"
+    },
+    "config": {
+        "commitizen": {
+            "path": "cz-conventional-changelog"
+        }
+    },
+    "dependencies": {
+        "opn": "^4.0.2",
+        "ramda": "^0.21.0"
     }
-  },
-  "scripts": {
-    "vscode:prepublish": "node ./node_modules/vscode/bin/compile",
-    "compile": "node ./node_modules/vscode/bin/compile -watch -p ./",
-    "postinstall": "node ./node_modules/vscode/bin/install"
-  },
-  "devDependencies": {
-    "commitizen": "^2.8.1",
-    "cz-conventional-changelog": "^1.1.6",
-    "typescript": "^1.8.5",
-    "vscode": "^0.11.0"
-  },
-  "config": {
-    "commitizen": {
-      "path": "cz-conventional-changelog"
-    }
-  },
-  "dependencies": {
-    "opn": "^4.0.2",
-    "ramda": "^0.21.0"
-  }
 }

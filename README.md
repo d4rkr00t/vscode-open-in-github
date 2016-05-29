@@ -5,6 +5,13 @@
 
 Provides commands to quickly view the current file on GitHub.
 
+## Installation
+Launch VS Code Quick Open (⌘+P), paste the following command, and type enter.
+```
+ext install vscode-open-in-github
+```
+
+
 ## Usage
 When editing a file, use the command palette (cmd + shift + p / ctrl + shift + p) to:
 

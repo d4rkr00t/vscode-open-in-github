@@ -24,7 +24,7 @@ When editing a file, use the command palette (cmd + shift + p / ctrl + shift + p
 
 Add these lines to the workspace settings:
 
-```json
+```js
 {
   ...
   "openInGitHub.defaultBranch": "dev", // Set default branch, default: master

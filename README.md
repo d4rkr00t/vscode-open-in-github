@@ -41,7 +41,6 @@ Add these lines to the workspace settings:
 ```
 
 ## TODO
-* Open File Blame
 * Open File History
 * Open Repository
 * Open Pull Request related to the file

@@ -24,7 +24,8 @@
     "main": "./out/src/extension",
     "icon": "assets/icon.jpg",
     "activationEvents": [
-        "onCommand:openInGithub.openInGitHubFile"
+        "onCommand:openInGithub.openInGitHubFile",
+        "onCommand:openInGithub.openInGitHubBlame"
     ],
     "contributes": {
         "commands": [

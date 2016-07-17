@@ -1,5 +1,6 @@
 import * as assert from 'assert';
-import * as ext from '../src/extension';
+import * as common from '../src/common';
+import * as file from '../src/file';
 
 suite('#getRemotes', () => {
   const mockRemoteResult = `
@@ -10,7 +11,7 @@ upstream	https://github.yandex-team.ru/serp/web4 (push)
 `;
 
   test('should return correct remotes list', done => {
-    ext
+    common
       .getRemotes((cmd, opts, cb) => cb(null, mockRemoteResult, null), '')
       .then((list) => {
         assert.deepEqual(
@@ -26,7 +27,7 @@ upstream	https://github.yandex-team.ru/serp/web4 (push)
   });
 
   test('should be rejected if error occured', done => {
-    ext
+    common
       .getRemotes((cmd, opts, cb) => cb(null, mockRemoteResult, 'error'), '')
       .then(done)
       .catch(() => done());
@@ -48,7 +49,7 @@ suite('#formatRemotes', () => {
   ];
 
   test('should correctly format all types of git remote urls', () => {
-    const result = ext.formatRemotes(mockRemotesList);
+    const result = common.formatRemotes(mockRemotesList);
     assert.deepEqual(
       result,
       [
@@ -74,7 +75,7 @@ suite('#getCurrentBranch', () => {
 `;
 
   test('should return correct current branch', done => {
-    ext
+    common
       .getCurrentBranch((cmd, opts, cb) => cb(null, mockBranchResult, null), '')
       .then((branch) => {
         assert.equal(branch, 'sysoev/SERP-42779');
@@ -84,35 +85,28 @@ suite('#getCurrentBranch', () => {
   });
 
   test('should be rejected if error occured', done => {
-    ext
+    common
       .getCurrentBranch((cmd, opts, cb) => cb(null, mockBranchResult, 'error'), '')
       .then(done)
       .catch(() => done());
   });
 });
 
-suite('#formatQuickPickItems', () => {
-  test('should format strings for quick pick view', () => {
-    const results = ext.formatQuickPickItems('rel/path/to/file.js', 10, ['https://remote.url'], 'master');
-    assert.equal(results[0], '[master]\t—\thttps://remote.url/blob/master/rel/path/to/file.js#L10');
-  });
-});
-
 suite('#prepareQuickPickItems', () => {
   suite('if current branch and master branch are equal', () => {
     test('should return only 1 item if there is only 1 remote', () => {
-      const result = ext.prepareQuickPickItems('file.js', 10, 'master', [['https://rem'], 'master']);
+      const result = common.prepareQuickPickItems(file.formatQuickPickItems, 'file.js', 10, 'master', [['https://rem'], 'master']);
       assert.equal(result.length, 1);
     });
 
     test('should return number of quick pick items equal to number of remotes', () => {
-      const result = ext.prepareQuickPickItems('file.js', 10, 'master', [['https://rem', 'https://rem2'], 'master']);
+      const result = common.prepareQuickPickItems(file.formatQuickPickItems, 'file.js', 10, 'master', [['https://rem', 'https://rem2'], 'master']);
       assert.equal(result.length, 2);
     });
   });
 
   suite('if current branch and master branch are not equal', () => {
-    const result = ext.prepareQuickPickItems('file.js', 10, 'master', [['https://rem', 'https://rem2'], 'feat']);
+    const result = common.prepareQuickPickItems(file.formatQuickPickItems, 'file.js', 10, 'master', [['https://rem', 'https://rem2'], 'feat']);
 
     test('should merge quick pick items for current branch and master branch', () => {
       assert.equal(result.length, 4);

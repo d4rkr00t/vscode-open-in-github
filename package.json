@@ -24,13 +24,17 @@
     "main": "./out/src/extension",
     "icon": "assets/icon.jpg",
     "activationEvents": [
-        "onCommand:extension.openInGitHubFile"
+        "onCommand:openInGithub.openInGitHubFile"
     ],
     "contributes": {
         "commands": [
             {
-                "command": "extension.openInGitHubFile",
+                "command": "openInGithub.openInGitHubFile",
                 "title": "Open In GitHub: File"
+            },
+            {
+                "command": "openInGithub.openInGitHubBlame",
+                "title": "Open In GitHub: Blame"
             }
         ],
         "configuration": {

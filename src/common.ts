@@ -5,7 +5,35 @@ const path = require('path');
 const opn = require('opn');
 const R = require('ramda');
 
-const BRANCH_URL_SEP = '\t—\t';
+export const BRANCH_URL_SEP = '\t—\t';
+
+/**
+ * Makes initial preparations for all commands.
+ *
+ * @return {Promise}
+ */
+export function baseCommand(formatQuickPickItems:Function) {
+  const activeTextEditor = window.activeTextEditor;
+
+  if (!activeTextEditor) {
+    window.showErrorMessage('No opened files.');
+    return;
+  }
+
+  const filePath = window.activeTextEditor.document.fileName;
+  const projectPath = workspace.rootPath;
+  const relativeFilePath = path.relative(projectPath, filePath);
+  const line = window.activeTextEditor.selection.start.line + 1;
+  const defaultBranch = workspace.getConfiguration('openInGitHub').get('defaultBranch') || 'master';
+
+  const getRemotesPromise = getRemotes(exec, projectPath).then(formatRemotes);
+  const getCurrentBranchPromise = getCurrentBranch(exec, projectPath);
+
+  return Promise.all([getRemotesPromise, getCurrentBranchPromise])
+    .then(prepareQuickPickItems.bind(null, formatQuickPickItems, relativeFilePath, line, defaultBranch))
+    .then(showQuickPickWindow)
+    .catch(err => window.showErrorMessage(err));
+}
 
 /**
  * Returns raw list of remotes.
@@ -48,9 +76,11 @@ export function formatRemotes(remotes: string[]) : string[] {
   const process = R.compose(
     R.map(R.replace(/\/$/, '')),
     R.reject(R.isEmpty),
+    R.map(R.replace(/\n/, '')),
+    R.map(R.trim),
     R.map(rem => {
       if (rem.match(/^https?:/)) {
-        return rem;
+        return rem.replace(/\.git$/, '');
       } else if (rem.match(/@/)) {
         return 'https://' +
           rem

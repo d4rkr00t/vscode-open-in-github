@@ -7,7 +7,7 @@ const path = require('path');
 const opn = require('opn');
 const R = require('ramda');
 
-export default function fileCommand() {
+export default function blameCommand() {
   baseCommand(formatQuickPickItems);
 }
 
@@ -22,6 +22,6 @@ export default function fileCommand() {
  */
 export function formatQuickPickItems(relativeFilePath: string, line: number, remotes: string[], branch: string): string[] {
   return remotes
-    .map(r => `${r}/blob/${branch}/${relativeFilePath}#L${line || 1}`)
+    .map(r => `${r}/blame/${branch}/${relativeFilePath}#L${line || 1}`)
     .map(r => `[${branch}]${BRANCH_URL_SEP}${r}`);
 }

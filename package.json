@@ -25,7 +25,8 @@
     "icon": "assets/icon.jpg",
     "activationEvents": [
         "onCommand:openInGithub.openInGitHubFile",
-        "onCommand:openInGithub.openInGitHubBlame"
+        "onCommand:openInGithub.openInGitHubBlame",
+        "onCommand:openInGithub.openInGitHubHistory"
     ],
     "contributes": {
         "commands": [
@@ -36,6 +37,10 @@
             {
                 "command": "openInGithub.openInGitHubBlame",
                 "title": "Open In GitHub: Blame"
+            },
+            {
+                "command": "openInGithub.openInGitHubHistory",
+                "title": "Open In GitHub: History"
             }
         ],
         "configuration": {

@@ -17,6 +17,7 @@ When editing a file, use the command palette (cmd + shift + p / ctrl + shift + p
 
 * Open the file in GitHub — "Open In GitHub: File"
 * Open the blame in GitHub — "Open In GitHub: Blame"
+* Open the history in GitHub — "Open In GitHub: History"
 
 ![Commands](assets/commands.png)
 ![Multiple remotes](assets/multiple-remotes-and-branches.png)
@@ -41,7 +42,6 @@ Add these lines to the workspace settings:
 ```
 
 ## TODO
-* Open File History
 * Open Repository
 * Open Pull Request related to the file
 

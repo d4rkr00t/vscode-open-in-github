@@ -16,6 +16,7 @@ ext install vscode-open-in-github
 When editing a file, use the command palette (cmd + shift + p / ctrl + shift + p) to:
 
 * Open the file in GitHub — "Open In GitHub: File"
+* Open the blame in GitHub — "Open In GitHub: Blame"
 
 ![Commands](assets/commands.png)
 ![Multiple remotes](assets/multiple-remotes-and-branches.png)

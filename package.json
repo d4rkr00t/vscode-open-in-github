@@ -1,79 +1,82 @@
 {
-    "name": "vscode-open-in-github",
-    "displayName": "Open In GitHub",
-    "description": "Provides commands to quickly view the current file on GitHub.",
-    "version": "1.2.0",
-    "publisher": "sysoev",
-    "engines": {
-        "vscode": "^1.0.0"
-    },
-    "categories": [
-        "Other"
+  "name": "vscode-open-in-github",
+  "displayName": "Open In GitHub",
+  "description": "Provides commands to quickly view the current file on GitHub.",
+  "version": "1.2.0",
+  "publisher": "sysoev",
+  "engines": {
+    "vscode": "^1.0.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "vscode",
+    "github",
+    "bitbucket"
+  ],
+  "homepage": "https://github.com/d4rkr00t/vscode-open-in-github",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/d4rkr00t/vscode-open-in-github.git"
+  },
+  "bugs": "https://github.com/d4rkr00t/vscode-open-in-github/issues",
+  "main": "./out/src/extension",
+  "icon": "assets/icon.jpg",
+  "activationEvents": [
+    "onCommand:openInGithub.openInGitHubFile",
+    "onCommand:openInGithub.openInGitHubBlame",
+    "onCommand:openInGithub.openInGitHubHistory"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "openInGithub.openInGitHubFile",
+        "title": "Open In GitHub: File"
+      },
+      {
+        "command": "openInGithub.openInGitHubBlame",
+        "title": "Open In GitHub: Blame"
+      },
+      {
+        "command": "openInGithub.openInGitHubHistory",
+        "title": "Open In GitHub: History"
+      }
     ],
-    "keywords": [
-        "vscode",
-        "github",
-        "bitbucket"
-    ],
-    "homepage": "https://github.com/d4rkr00t/vscode-open-in-github",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/d4rkr00t/vscode-open-in-github.git"
-    },
-    "bugs": "https://github.com/d4rkr00t/vscode-open-in-github/issues",
-    "main": "./out/src/extension",
-    "icon": "assets/icon.jpg",
-    "activationEvents": [
-        "onCommand:openInGithub.openInGitHubFile",
-        "onCommand:openInGithub.openInGitHubBlame",
-        "onCommand:openInGithub.openInGitHubHistory"
-    ],
-    "contributes": {
-        "commands": [
-            {
-                "command": "openInGithub.openInGitHubFile",
-                "title": "Open In GitHub: File"
-            },
-            {
-                "command": "openInGithub.openInGitHubBlame",
-                "title": "Open In GitHub: Blame"
-            },
-            {
-                "command": "openInGithub.openInGitHubHistory",
-                "title": "Open In GitHub: History"
-            }
-        ],
-        "configuration": {
-            "type": "object",
-            "title": "Which branch is default in repository.",
-            "properties": {
-                "openInGitHub.defaultBranch": {
-                    "type": "string",
-                    "default": "master",
-                    "description": "Controls which branch will be treated as default."
-                }
-            }
+    "configuration": {
+      "type": "object",
+      "title": "Which branch is default in repository.",
+      "properties": {
+        "openInGitHub.defaultBranch": {
+          "type": "string",
+          "default": "master",
+          "description": "Controls which branch will be treated as default."
         }
-    },
-    "scripts": {
-        "vscode:prepublish": "node ./node_modules/vscode/bin/compile",
-        "compile": "node ./node_modules/vscode/bin/compile -watch -p ./",
-        "build": "node ./node_modules/vscode/bin/compile -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install"
-    },
-    "devDependencies": {
-        "commitizen": "^2.8.1",
-        "cz-conventional-changelog": "^1.1.6",
-        "typescript": "^1.8.5",
-        "vscode": "^0.11.0"
-    },
-    "config": {
-        "commitizen": {
-            "path": "cz-conventional-changelog"
-        }
-    },
-    "dependencies": {
-        "opn": "^4.0.2",
-        "ramda": "^0.21.0"
+      }
     }
+  },
+  "scripts": {
+    "vscode:prepublish": "tsc -p ./",
+    "compile": "tsc -watch -p ./",
+    "build": "tsc -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install"
+  },
+  "devDependencies": {
+    "@types/mocha": "^2.2.32",
+    "@types/node": "^6.0.45",
+    "@types/ramda": "0.0.2",
+    "commitizen": "^2.8.1",
+    "cz-conventional-changelog": "^1.1.6",
+    "typescript": "^2.0.3",
+    "vscode": "^1.0.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
+  "dependencies": {
+    "opn": "^4.0.2",
+    "ramda": "^0.22.1"
+  }
 }

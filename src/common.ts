@@ -21,18 +21,39 @@ export function baseCommand(formatQuickPickItems:Function) {
   }
 
   const filePath = window.activeTextEditor.document.fileName;
-  const projectPath = workspace.rootPath;
-  const relativeFilePath = path.relative(projectPath, filePath);
   const line = window.activeTextEditor.selection.start.line + 1;
   const defaultBranch = workspace.getConfiguration('openInGitHub').get('defaultBranch') || 'master';
+  const projectPath = workspace.rootPath;
 
-  const getRemotesPromise = getRemotes(exec, projectPath).then(formatRemotes);
-  const getCurrentBranchPromise = getCurrentBranch(exec, projectPath);
+  return getRepoRoot(exec, projectPath)
+    .then(repoRootPath => {
+      const relativeFilePath = path.relative(repoRootPath, filePath);
+      const getRemotesPromise = getRemotes(exec, projectPath).then(formatRemotes);
+      const getCurrentBranchPromise = getCurrentBranch(exec, projectPath);
 
-  return Promise.all([getRemotesPromise, getCurrentBranchPromise])
-    .then(prepareQuickPickItems.bind(null, formatQuickPickItems, relativeFilePath, line, defaultBranch))
-    .then(showQuickPickWindow)
-    .catch(err => window.showErrorMessage(err));
+      return Promise.all([getRemotesPromise, getCurrentBranchPromise])
+        .then(prepareQuickPickItems.bind(null, formatQuickPickItems, relativeFilePath, line, defaultBranch))
+        .then(showQuickPickWindow)
+        .catch(err => window.showErrorMessage(err));
+    });
+
+}
+
+/**
+ * Returns repo root path.
+ *
+ * @param {Function} exec
+ * @param {String} workspacePath
+ *
+ * @return {Promise<String>}
+ */
+export function getRepoRoot(exec, workspacePath: string) : Promise<string> {
+  return new Promise((resolve, reject) => {
+    exec('git rev-parse --show-toplevel', { cwd: workspacePath }, (error, stdout, stderr) => {
+      if (stderr || error) return reject(stderr || error);
+      resolve(stdout.trim());
+    });
+  });
 }
 
 /**
@@ -59,7 +80,6 @@ export function getRemotes(exec, projectPath: string) : Promise<string[]> {
   return new Promise((resolve, reject) => {
     exec('git remote -v', { cwd: projectPath }, (error, stdout, stderr) => {
       if (stderr || error) return reject(stderr || error);
-
       resolve(process(stdout));
     });
   });

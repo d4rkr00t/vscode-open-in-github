@@ -46,7 +46,8 @@ suite('#formatRemotes', () => {
     'https://host.xz/path/to/repo.git/',
     'ftps://host.xz/path/to/repo.git/',
     'http://host.xz/path/to/repo.git/',
-    'ftp://host.xz/path/to/repo.git/'
+    'ftp://host.xz/path/to/repo.git/',
+    'https://lillecarl@github.com/Lillecarl/mangos-tbc.git'
   ];
 
   test('should correctly format all types of git remote urls', () => {
@@ -64,7 +65,8 @@ suite('#formatRemotes', () => {
         'https://host.xz/path/to/repo.git',
         'https://host.xz/path/to/repo.git',
         'http://host.xz/path/to/repo.git',
-        'http://host.xz/path/to/repo.git'
+        'http://host.xz/path/to/repo.git',
+        'https://github.com/Lillecarl/mangos-tbc',
       ]
     );
   });

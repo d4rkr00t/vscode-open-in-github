@@ -76,14 +76,28 @@ suite('#getCurrentBranch', () => {
   const mockBranchResult = `
   dev
 * sysoev/SERP-42779
+  remotes/origin/sysoev/SERP-42779
+`;
+  const mockBranchResultNoRemotes = `
+  dev
+* sysoev/SERP-42779
 `;
 
-  test('should return correct current branch', done => {
+  test('should return current branch', done => {
     common
       .getCurrentBranch((cmd, opts, cb) => cb(null, mockBranchResult, null), '')
       .then((branch) => {
         assert.equal(branch, 'sysoev/SERP-42779');
         done();
+      })
+      .catch(done);
+  });
+
+  test('should return empty string if there aren`t any remotes with the name of current branch', done => {
+    common
+      .getCurrentBranch((cmd, opts, cb) => cb(null, mockBranchResultNoRemotes, null), '')
+      .then((branch) => {
+        !branch && done();
       })
       .catch(done);
   });

@@ -143,7 +143,9 @@ export function getCurrentBranch(exec, projectPath: string) : Promise<string> {
         R.split('\n')
       );
 
-      resolve(process(stdout));
+      const currentBranch = process(stdout);
+
+      resolve(stdout.match(new RegExp(`remotes\/.*\/${currentBranch}`)) ? currentBranch : '');
     });
   });
 }
@@ -160,8 +162,8 @@ export function getCurrentBranch(exec, projectPath: string) : Promise<string> {
 export function prepareQuickPickItems(formatter:Function, relativeFilePath: string, line: number, masterBranch: string, [remotes, branch]: [string[], string]) : string[] {
   // https://github.com/elm-lang/navigation/blob/master/src/Navigation.elm
 
-  if (masterBranch === branch) {
-    return formatter(relativeFilePath, line, remotes, branch);
+  if (masterBranch === branch || !branch) {
+    return formatter(relativeFilePath, line, remotes, masterBranch);
   }
 
   const currentBranchQuickPickList = formatter(relativeFilePath, line, remotes, branch);

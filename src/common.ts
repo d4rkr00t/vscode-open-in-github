@@ -5,7 +5,7 @@ const path = require('path');
 const opn = require('opn');
 const R = require('ramda');
 
-export const BRANCH_URL_SEP = '\t—\t';
+export const BRANCH_URL_SEP = ' — ';
 
 /**
  * Makes initial preparations for all commands.
@@ -22,17 +22,17 @@ export function baseCommand(formatQuickPickItems:Function) {
 
   const filePath = window.activeTextEditor.document.fileName;
   const line = window.activeTextEditor.selection.start.line + 1;
-  const defaultBranch = workspace.getConfiguration('openInGitHub').get('defaultBranch') || 'master';
+  const defaultBranch = workspace.getConfiguration('openInGitHub').get<string>('defaultBranch') || 'master';
   const projectPath = workspace.rootPath;
 
   return getRepoRoot(exec, projectPath)
     .then(repoRootPath => {
       const relativeFilePath = path.relative(repoRootPath, filePath);
       const getRemotesPromise = getRemotes(exec, projectPath).then(formatRemotes);
-      const getCurrentBranchPromise = getCurrentBranch(exec, projectPath);
+      const getBranchesPromise = getBranches(exec, projectPath, defaultBranch);
 
-      return Promise.all([getRemotesPromise, getCurrentBranchPromise])
-        .then(prepareQuickPickItems.bind(null, formatQuickPickItems, relativeFilePath, line, defaultBranch))
+      return Promise.all([getRemotesPromise, getBranchesPromise])
+        .then(result => prepareQuickPickItems(formatQuickPickItems, relativeFilePath, line, result))
         .then(showQuickPickWindow)
         .catch(err => window.showErrorMessage(err));
     });
@@ -128,24 +128,30 @@ export function formatRemotes(remotes: string[]) : string[] {
  *
  * @param {Function} exec
  * @param {String} filePath
+ * @param {String} defaultBranch
  *
  * @return {Promise<String>}
  */
-export function getCurrentBranch(exec, projectPath: string) : Promise<string> {
+export function getBranches(exec, projectPath: string, defaultBranch: string) : Promise<string[]> {
   return new Promise((resolve, reject) => {
-    exec('git branch --no-color', { cwd: projectPath }, (error, stdout, stderr) => {
+    exec('git branch --no-color -a', { cwd: projectPath }, (error, stdout, stderr) => {
       if (stderr || error) return reject(stderr || error);
 
-      const process = R.compose(
+      const getCurrentBranch = R.compose(
         R.trim,
         R.replace('*', ''),
         R.find(line => line.startsWith('*')),
         R.split('\n')
       );
+      const processBranches = R.compose(
+        R.filter(br => stdout.match(new RegExp(`remotes\/.*\/${br}`))),
+        R.uniq
+      );
 
-      const currentBranch = process(stdout);
+      const currentBranch = getCurrentBranch(stdout);
+      const branches = processBranches([currentBranch, defaultBranch]);
 
-      resolve(stdout.match(new RegExp(`remotes\/.*\/${currentBranch}`)) ? currentBranch : '');
+      resolve(branches);
     });
   });
 }
@@ -155,21 +161,27 @@ export function getCurrentBranch(exec, projectPath: string) : Promise<string> {
  *
  * @param {String} relativeFilePath
  * @param {Number} line
- * @param {String} masterBranch
  *
  * @return {String[]}
  */
-export function prepareQuickPickItems(formatter:Function, relativeFilePath: string, line: number, masterBranch: string, [remotes, branch]: [string[], string]) : string[] {
+export function prepareQuickPickItems(formatter:Function, relativeFilePath: string, line: number, [remotes, branches]: string[][]) : string[] {
   // https://github.com/elm-lang/navigation/blob/master/src/Navigation.elm
 
-  if (masterBranch === branch || !branch) {
-    return formatter(relativeFilePath, line, remotes, masterBranch);
+  if (!branches.length) {
+    return [];
   }
 
-  const currentBranchQuickPickList = formatter(relativeFilePath, line, remotes, branch);
-  const masterBranchQuickPickList = formatter(relativeFilePath, line, remotes, masterBranch);
+  if (branches.length === 1) {
+    return formatter(relativeFilePath, line, remotes, branches[0]);
+  }
 
-  return R.flatten(R.zip(currentBranchQuickPickList, masterBranchQuickPickList));
+  const processBranches = R.compose(
+    R.flatten,
+    (result) => R.zip(result[0], result[1]),
+    R.map(branch => formatter(relativeFilePath, line, remotes, branch))
+  );
+
+  return processBranches(branches);
 }
 
 
@@ -196,6 +208,7 @@ export function showQuickPickWindow(quickPickList: string[]) {
  *
  * @param {String} item
  */
-export function openQuickPickItem(item: string) {
+export function openQuickPickItem(item?: string) {
+  if (!item) return;
   opn(item.split(BRANCH_URL_SEP)[1]);
 }

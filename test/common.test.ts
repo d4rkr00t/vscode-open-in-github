@@ -72,11 +72,12 @@ suite('#formatRemotes', () => {
   });
 });
 
-suite('#getCurrentBranch', () => {
+suite('#getBranches', () => {
   const mockBranchResult = `
   dev
 * sysoev/SERP-42779
   remotes/origin/sysoev/SERP-42779
+  remotes/origin/dev
 `;
   const mockBranchResultNoRemotes = `
   dev
@@ -85,9 +86,9 @@ suite('#getCurrentBranch', () => {
 
   test('should return current branch', done => {
     common
-      .getCurrentBranch((cmd, opts, cb) => cb(null, mockBranchResult, null), '')
+      .getBranches((cmd, opts, cb) => cb(null, mockBranchResult, null), '', 'dev')
       .then((branch) => {
-        assert.equal(branch, 'sysoev/SERP-42779');
+        assert.deepEqual(branch, ['sysoev/SERP-42779', 'dev']);
         done();
       })
       .catch(done);
@@ -95,16 +96,16 @@ suite('#getCurrentBranch', () => {
 
   test('should return empty string if there aren`t any remotes with the name of current branch', done => {
     common
-      .getCurrentBranch((cmd, opts, cb) => cb(null, mockBranchResultNoRemotes, null), '')
+      .getBranches((cmd, opts, cb) => cb(null, mockBranchResultNoRemotes, null), '', 'dev')
       .then((branch) => {
-        !branch && done();
+        !branch.length && done();
       })
       .catch(done);
   });
 
   test('should be rejected if error occured', done => {
     common
-      .getCurrentBranch((cmd, opts, cb) => cb(null, mockBranchResult, 'error'), '')
+      .getBranches((cmd, opts, cb) => cb(null, mockBranchResult, 'error'), '', 'dev')
       .then(done)
       .catch(() => done());
   });
@@ -113,18 +114,18 @@ suite('#getCurrentBranch', () => {
 suite('#prepareQuickPickItems', () => {
   suite('if current branch and master branch are equal', () => {
     test('should return only 1 item if there is only 1 remote', () => {
-      const result = common.prepareQuickPickItems(file.formatQuickPickItems, 'file.js', 10, 'master', [['https://rem'], 'master']);
+      const result = common.prepareQuickPickItems(file.formatQuickPickItems, 'file.js', 10, [['https://rem'], ['master']]);
       assert.equal(result.length, 1);
     });
 
     test('should return number of quick pick items equal to number of remotes', () => {
-      const result = common.prepareQuickPickItems(file.formatQuickPickItems, 'file.js', 10, 'master', [['https://rem', 'https://rem2'], 'master']);
+      const result = common.prepareQuickPickItems(file.formatQuickPickItems, 'file.js', 10, [['https://rem', 'https://rem2'], ['master']]);
       assert.equal(result.length, 2);
     });
   });
 
   suite('if current branch and master branch are not equal', () => {
-    const result = common.prepareQuickPickItems(file.formatQuickPickItems, 'file.js', 10, 'master', [['https://rem', 'https://rem2'], 'feat']);
+    const result = common.prepareQuickPickItems(file.formatQuickPickItems, 'file.js', 10, [['https://rem', 'https://rem2'], ['feat', 'master']]);
 
     test('should merge quick pick items for current branch and master branch', () => {
       assert.equal(result.length, 4);

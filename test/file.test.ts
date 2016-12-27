@@ -5,6 +5,6 @@ import * as file from '../src/file';
 suite('fileCommand # formatQuickPickItems', () => {
   test('should format strings for quick pick view', () => {
     const results = file.formatQuickPickItems('rel/path/to/file.js', 10, ['https://remote.url'], 'master');
-    assert.equal(results[0], '[master]\t—\thttps://remote.url/blob/master/rel/path/to/file.js#L10');
+    assert.equal(results[0], '[master] — https://remote.url/blob/master/rel/path/to/file.js#L10');
   });
 });

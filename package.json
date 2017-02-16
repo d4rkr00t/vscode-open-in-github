@@ -13,7 +13,8 @@
     "keywords": [
         "vscode",
         "github",
-        "bitbucket"
+        "bitbucket",
+        "git"
     ],
     "homepage": "https://github.com/d4rkr00t/vscode-open-in-github",
     "repository": {

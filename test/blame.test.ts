@@ -1,10 +1,26 @@
 import * as assert from 'assert';
-import * as common from '../src/common';
 import * as blame from '../src/blame';
 
-suite('blameCommand # formatQuickPickItems', () => {
+suite('blameCommand # formatGitHubBlameUrl', () => {
   test('should format strings for quick pick view', () => {
-    const results = blame.formatQuickPickItems('rel/path/to/file.js', 10, ['https://remote.url'], 'master');
-    assert.equal(results[0], '[master] — https://remote.url/blame/master/rel/path/to/file.js#L10');
+    const results = blame.formatGitHubBlameUrl('https://remote.url', 'master', 'rel/path/to/file.js', 10);
+    assert.equal(results, 'https://remote.url/blame/master/rel/path/to/file.js#L10');
+  });
+
+  test('should format strings for quick pick view', () => {
+    const results = blame.formatGitHubBlameUrl('https://remote.url', 'master', 'rel/path/to/file.js');
+    assert.equal(results, 'https://remote.url/blame/master/rel/path/to/file.js');
+  });
+});
+
+suite('blameCommand # formatBitbucketBlameUrl', () => {
+  test('should format strings for quick pick view', () => {
+    const results = blame.formatBitbucketBlameUrl('https://bitbucket.org/some/repo', 'master', 'rel/path/to/file.js', 10);
+    assert.equal(results, 'https://bitbucket.org/some/repo/annotate/master/rel/path/to/file.js#file.js-10');
+  });
+
+  test('should format strings for quick pick view', () => {
+    const results = blame.formatBitbucketBlameUrl('https://bitbucket.org/some/repo', 'master', 'rel/path/to/file.js');
+    assert.equal(results, 'https://bitbucket.org/some/repo/annotate/master/rel/path/to/file.js');
   });
 });

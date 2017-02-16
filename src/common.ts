@@ -7,12 +7,17 @@ const R = require('ramda');
 
 export const BRANCH_URL_SEP = ' — ';
 
+interface Formatters {
+  github: Function,
+  bitbucket: Function
+}
+
 /**
  * Makes initial preparations for all commands.
  *
  * @return {Promise}
  */
-export function baseCommand(formatQuickPickItems:Function) {
+export function baseCommand(formatters: Formatters) {
   const activeTextEditor = window.activeTextEditor;
 
   if (!activeTextEditor) {
@@ -32,7 +37,7 @@ export function baseCommand(formatQuickPickItems:Function) {
       const getBranchesPromise = getBranches(exec, projectPath, defaultBranch);
 
       return Promise.all([getRemotesPromise, getBranchesPromise])
-        .then(result => prepareQuickPickItems(formatQuickPickItems, relativeFilePath, line, result))
+        .then(result => prepareQuickPickItems(formatters, relativeFilePath, line, result))
         .then(showQuickPickWindow)
         .catch(err => window.showErrorMessage(err));
     });
@@ -156,6 +161,15 @@ export function getBranches(exec, projectPath: string, defaultBranch: string) : 
   });
 }
 
+export function formatQuickPickItems(formatters: Formatters, relativeFilePath: string, line: number, remotes: string[], branch: string): string[] {
+  return remotes
+    .map(r =>
+      isBitbucket(r)
+        ? formatters.bitbucket(r, branch, relativeFilePath, line)
+        : formatters.github(r, branch, relativeFilePath, line))
+    .map(r => `[${branch}]${BRANCH_URL_SEP}${r}`);
+}
+
 /**
  * Builds quick pick items list.
  *
@@ -164,26 +178,38 @@ export function getBranches(exec, projectPath: string, defaultBranch: string) : 
  *
  * @return {String[]}
  */
-export function prepareQuickPickItems(formatter:Function, relativeFilePath: string, line: number, [remotes, branches]: string[][]) : string[] {
-  // https://github.com/elm-lang/navigation/blob/master/src/Navigation.elm
-
+export function prepareQuickPickItems(formatters: Formatters, relativeFilePath: string, line: number, [remotes, branches]: string[][]): string[] {
   if (!branches.length) {
     return [];
   }
 
   if (branches.length === 1) {
-    return formatter(relativeFilePath, line, remotes, branches[0]);
+    return formatQuickPickItems(formatters, relativeFilePath, line, remotes, branches[0]);
   }
 
   const processBranches = R.compose(
     R.flatten,
     (result) => R.zip(result[0], result[1]),
-    R.map(branch => formatter(relativeFilePath, line, remotes, branch))
+    R.map(branch => formatQuickPickItems(formatters, relativeFilePath, line, remotes, branch))
   );
 
   return processBranches(branches);
 }
 
+/**
+ * Returns true if remote is butbicket.
+ */
+export function isBitbucket(remote: string): boolean {
+  return !!remote.match('bitbucket.org');
+}
+
+export function formatBitbucketLinePointer(filePath: string, line?: number): string {
+  return line ? `#${path.basename(filePath)}-${line}` : '';
+}
+
+export function formatGitHubLinePointer(line?: number): string {
+  return line ? `#L${line}` : '';
+}
 
 /**
  * Shows quick pick window.

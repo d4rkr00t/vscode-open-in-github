@@ -2,7 +2,7 @@ import { window, workspace } from 'vscode';
 import { baseCommand, formatBitbucketLinePointer, formatGitHubLinePointer } from './common';
 
 export default function blameCommand() {
-  baseCommand({ github: formatGitHubBlameUrl, bitbucket: formatBitbucketBlameUrl });
+  baseCommand('blame', { github: formatGitHubBlameUrl, bitbucket: formatBitbucketBlameUrl });
 }
 
 export function formatGitHubBlameUrl(remote: string, branch: string, filePath: string, line?: number): string {

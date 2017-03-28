@@ -2,7 +2,7 @@ import { window, workspace } from 'vscode';
 import { baseCommand, BRANCH_URL_SEP } from './common';
 
 export default function historyCommand() {
-  baseCommand({ github: formatGitHubHistoryUrl, bitbucket: formatBitbucketHistoryUrl });
+  baseCommand('history', { github: formatGitHubHistoryUrl, bitbucket: formatBitbucketHistoryUrl });
 }
 
 export function formatGitHubHistoryUrl(remote: string, branch: string, filePath: string, line: number): string {

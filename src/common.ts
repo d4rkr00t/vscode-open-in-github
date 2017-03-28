@@ -1,4 +1,4 @@
-import { window, workspace } from 'vscode';
+import { window, workspace, QuickPickItem } from 'vscode';
 
 const exec = require('child_process').exec;
 const path = require('path');
@@ -17,7 +17,7 @@ interface Formatters {
  *
  * @return {Promise}
  */
-export function baseCommand(formatters: Formatters) {
+export function baseCommand(commandName: string, formatters: Formatters) {
   const activeTextEditor = window.activeTextEditor;
 
   if (!activeTextEditor) {
@@ -37,7 +37,7 @@ export function baseCommand(formatters: Formatters) {
       const getBranchesPromise = getBranches(exec, projectPath, defaultBranch);
 
       return Promise.all([getRemotesPromise, getBranchesPromise])
-        .then(result => prepareQuickPickItems(formatters, relativeFilePath, line, result))
+        .then(result => prepareQuickPickItems(formatters, commandName, relativeFilePath, line, result))
         .then(showQuickPickWindow)
         .catch(err => window.showErrorMessage(err));
     });
@@ -161,13 +161,18 @@ export function getBranches(exec, projectPath: string, defaultBranch: string) : 
   });
 }
 
-export function formatQuickPickItems(formatters: Formatters, relativeFilePath: string, line: number, remotes: string[], branch: string): string[] {
+export function formatQuickPickItems(formatters: Formatters, commandName: string, relativeFilePath: string, line: number, remotes: string[], branch: string): QuickPickItem[] {
   return remotes
-    .map(r =>
-      isBitbucket(r)
-        ? formatters.bitbucket(r, branch, relativeFilePath, line)
-        : formatters.github(r, branch, relativeFilePath, line))
-    .map(r => `[${branch}]${BRANCH_URL_SEP}${r}`);
+    .map(remote => (
+      isBitbucket(remote)
+        ? { remote, url: formatters.bitbucket(remote, branch, relativeFilePath, line) }
+        : { remote, url: formatters.github(remote, branch, relativeFilePath, line) }))
+    .map(remote => ({
+      label: relativeFilePath,
+      detail: `${branch} | ${remote.remote}`,
+      description: `[${commandName}]`,
+      url: remote.url
+    }));
 }
 
 /**
@@ -178,19 +183,19 @@ export function formatQuickPickItems(formatters: Formatters, relativeFilePath: s
  *
  * @return {String[]}
  */
-export function prepareQuickPickItems(formatters: Formatters, relativeFilePath: string, line: number, [remotes, branches]: string[][]): string[] {
+export function prepareQuickPickItems(formatters: Formatters, commandName: string, relativeFilePath: string, line: number, [remotes, branches]: string[][]): QuickPickItem[] {
   if (!branches.length) {
     return [];
   }
 
   if (branches.length === 1) {
-    return formatQuickPickItems(formatters, relativeFilePath, line, remotes, branches[0]);
+    return formatQuickPickItems(formatters, commandName, relativeFilePath, line, remotes, branches[0]);
   }
 
   const processBranches = R.compose(
     R.flatten,
     (result) => R.zip(result[0], result[1]),
-    R.map(branch => formatQuickPickItems(formatters, relativeFilePath, line, remotes, branch))
+    R.map(branch => formatQuickPickItems(formatters, commandName, relativeFilePath, line, remotes, branch))
   );
 
   return processBranches(branches);
@@ -216,7 +221,7 @@ export function formatGitHubLinePointer(line?: number): string {
  *
  * @param {String[]} qucikPickList
  */
-export function showQuickPickWindow(quickPickList: string[]) {
+export function showQuickPickWindow(quickPickList: QuickPickItem[]) {
   if (quickPickList.length === 1) {
     openQuickPickItem(quickPickList[0]);
     return;
@@ -234,7 +239,7 @@ export function showQuickPickWindow(quickPickList: string[]) {
  *
  * @param {String} item
  */
-export function openQuickPickItem(item?: string) {
+export function openQuickPickItem(item?: QuickPickItem) {
   if (!item) return;
-  opn(item.split(BRANCH_URL_SEP)[1]);
+  opn((item as any).url);
 }

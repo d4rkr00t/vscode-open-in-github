@@ -115,26 +115,26 @@ suite('#prepareQuickPickItems', () => {
   const formatters = { github: () => '', bitbucket: () => '' };
   suite('if current branch and master branch are equal', () => {
     test('should return only 1 item if there is only 1 remote', () => {
-      const result = common.prepareQuickPickItems(formatters, 'file.js', 10, [['https://rem'], ['master']]);
+      const result = common.prepareQuickPickItems(formatters, 'test-command', 'file.js', 10, [['https://rem'], ['master']]);
       assert.equal(result.length, 1);
     });
 
     test('should return number of quick pick items equal to number of remotes', () => {
-      const result = common.prepareQuickPickItems(formatters, 'file.js', 10, [['https://rem', 'https://rem2'], ['master']]);
+      const result = common.prepareQuickPickItems(formatters, 'test-command', 'file.js', 10, [['https://rem', 'https://rem2'], ['master']]);
       assert.equal(result.length, 2);
     });
   });
 
   suite('if current branch and master branch are not equal', () => {
-    const result = common.prepareQuickPickItems(formatters, 'file.js', 10, [['https://rem', 'https://rem2'], ['feat', 'master']]);
+    const result = common.prepareQuickPickItems(formatters, 'test-command', 'file.js', 10, [['https://rem', 'https://rem2'], ['feat', 'master']]);
 
     test('should merge quick pick items for current branch and master branch', () => {
       assert.equal(result.length, 4);
     });
 
     test('should merge quick pick items for current branch and master branch in correct order', () => {
-      assert.ok(result[0].startsWith('[feat]'));
-      assert.ok(result[1].startsWith('[master]'));
+      assert.ok(result[0].detail.includes('feat'));
+      assert.ok(result[1].detail.includes('master'));
     });
   });
 });

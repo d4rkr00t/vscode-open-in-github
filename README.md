@@ -36,7 +36,8 @@ Add these lines to the workspace settings:
 ```js
 {
   ...
-  "openInGitHub.defaultBranch": "dev", // Set default branch if it's not master
+  "openInGitHub.defaultBranch": "master",
+  "openInGitHub.defaultRemote": "origin",
   ...
 }
 ```

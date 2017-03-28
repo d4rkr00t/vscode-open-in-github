@@ -12,7 +12,7 @@ upstream	https://github.yandex-team.ru/serp/web4 (push)
 
   test('should return correct remotes list', done => {
     common
-      .getRemotes((cmd, opts, cb) => cb(null, mockRemoteResult, null), '')
+      .getRemotes((cmd, opts, cb) => cb(null, mockRemoteResult, null), '', '', '', ['master'])
       .then((list) => {
         assert.deepEqual(
           list,
@@ -28,7 +28,7 @@ upstream	https://github.yandex-team.ru/serp/web4 (push)
 
   test('should be rejected if error occured', done => {
     common
-      .getRemotes((cmd, opts, cb) => cb(null, mockRemoteResult, 'error'), '')
+      .getRemotes((cmd, opts, cb) => cb(null, mockRemoteResult, 'error'), '', '', '', ['master'])
       .then(done)
       .catch(() => done());
   });
@@ -51,7 +51,7 @@ suite('#formatRemotes', () => {
   ];
 
   test('should correctly format all types of git remote urls', () => {
-    const result = common.formatRemotes(mockRemotesList);
+    const result = mockRemotesList.map(mock => common.formatRemotes([mock])[0]);
     assert.deepEqual(
       result,
       [
@@ -60,11 +60,11 @@ suite('#formatRemotes', () => {
         'https://github.yandex-team.ru/serp/web4',
         'https://github.com/d4rkr00t/language-stylus',
         'https://github.com/Microsoft/TypeScript',
+        'https://host.xz/path/to/repo',
         'https://host.xz/path/to/repo.git',
+        'https://host.xz/path/to/repo',
         'https://host.xz/path/to/repo.git',
-        'https://host.xz/path/to/repo.git',
-        'https://host.xz/path/to/repo.git',
-        'http://host.xz/path/to/repo.git',
+        'http://host.xz/path/to/repo',
         'http://host.xz/path/to/repo.git',
         'https://github.com/some/repo',
       ]

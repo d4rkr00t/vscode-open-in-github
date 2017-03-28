@@ -52,6 +52,11 @@
                     "type": "string",
                     "default": "master",
                     "description": "Controls which branch will be treated as default."
+                },
+                "openInGitHub.defaultRemote": {
+                    "type": "string",
+                    "default": "origin",
+                    "description": "Controls which remote will be treated as default."
                 }
             }
         }

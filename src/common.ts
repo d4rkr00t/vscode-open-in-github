@@ -12,6 +12,11 @@ interface Formatters {
   bitbucket: Function
 }
 
+export interface SelectedLines {
+  start: number,
+  end?: number
+}
+
 /**
  * Makes initial preparations for all commands.
  *
@@ -26,7 +31,9 @@ export function baseCommand(commandName: string, formatters: Formatters) {
   }
 
   const filePath = window.activeTextEditor.document.fileName;
-  const line = window.activeTextEditor.selection.start.line + 1;
+  const lineStart = window.activeTextEditor.selection.start.line + 1;
+  const lineEnd = window.activeTextEditor.selection.end.line + 1;
+  const selectedLines = { start: lineStart, end: lineEnd };
   const defaultBranch = workspace.getConfiguration('openInGitHub').get<string>('defaultBranch') || 'master';
   const defaultRemote = workspace.getConfiguration('openInGitHub').get<string>('defaultRemote') || 'origin';
   const projectPath = workspace.rootPath;
@@ -41,7 +48,7 @@ export function baseCommand(commandName: string, formatters: Formatters) {
             getRemotes(exec, projectPath, defaultRemote, defaultBranch, branches).then(formatRemotes);
           return Promise.all([getRemotesPromise, branches])
         })
-        .then(result => prepareQuickPickItems(formatters, commandName, relativeFilePath, line, result))
+        .then(result => prepareQuickPickItems(formatters, commandName, relativeFilePath, selectedLines, result))
         .then(showQuickPickWindow)
         .catch(err => window.showErrorMessage(err));
     });
@@ -211,12 +218,12 @@ export function getBranches(exec, projectPath: string, defaultBranch: string) : 
   });
 }
 
-export function formatQuickPickItems(formatters: Formatters, commandName: string, relativeFilePath: string, line: number, remotes: string[], branch: string): QuickPickItem[] {
+export function formatQuickPickItems(formatters: Formatters, commandName: string, relativeFilePath: string, lines: SelectedLines, remotes: string[], branch: string): QuickPickItem[] {
   return remotes
     .map(remote => (
       isBitbucket(remote)
-        ? { remote, url: formatters.bitbucket(remote, branch, relativeFilePath, line) }
-        : { remote, url: formatters.github(remote, branch, relativeFilePath, line) }))
+        ? { remote, url: formatters.bitbucket(remote, branch, relativeFilePath, lines) }
+        : { remote, url: formatters.github(remote, branch, relativeFilePath, lines) }))
     .map(remote => ({
       label: relativeFilePath,
       detail: `${branch} | ${remote.remote}`,
@@ -229,23 +236,23 @@ export function formatQuickPickItems(formatters: Formatters, commandName: string
  * Builds quick pick items list.
  *
  * @param {String} relativeFilePath
- * @param {Number} line
+ * @param {SelectedLines} lines
  *
  * @return {String[]}
  */
-export function prepareQuickPickItems(formatters: Formatters, commandName: string, relativeFilePath: string, line: number, [remotes, branches]: string[][]): QuickPickItem[] {
+export function prepareQuickPickItems(formatters: Formatters, commandName: string, relativeFilePath: string, lines: SelectedLines, [remotes, branches]: string[][]): QuickPickItem[] {
   if (!branches.length) {
     return [];
   }
 
   if (branches.length === 1) {
-    return formatQuickPickItems(formatters, commandName, relativeFilePath, line, remotes, branches[0]);
+    return formatQuickPickItems(formatters, commandName, relativeFilePath, lines, remotes, branches[0]);
   }
 
   const processBranches = R.compose(
     R.flatten,
     (result) => R.zip(result[0], result[1]),
-    R.map(branch => formatQuickPickItems(formatters, commandName, relativeFilePath, line, remotes, branch))
+    R.map(branch => formatQuickPickItems(formatters, commandName, relativeFilePath, lines, remotes, branch))
   );
 
   return processBranches(branches);
@@ -258,18 +265,32 @@ export function isBitbucket(remote: string): boolean {
   return !!remote.match('bitbucket.org');
 }
 
-export function formatBitbucketLinePointer(filePath: string, line?: number): string {
-  return line ? `#${path.basename(filePath)}-${line}` : '';
+export function formatBitbucketLinePointer(filePath: string, lines?: SelectedLines): string {
+  if (!lines || !lines.start) {
+    return '';
+  }
+  const fileBasename = `#${path.basename(filePath)}`;
+  let linePointer = `${fileBasename}-${lines.start}`;
+  if (lines.end && lines.end != lines.start) linePointer += `:${lines.end}`;
+
+  return linePointer;
 }
 
-export function formatGitHubLinePointer(line?: number): string {
-  return line ? `#L${line}` : '';
+export function formatGitHubLinePointer(lines?: SelectedLines): string {
+  if (!lines || !lines.start) {
+    return '';
+  }
+
+  let linePointer = `#L${lines.start}`;
+  if (lines.end && lines.end != lines.start) linePointer += `:L${lines.end}`;
+
+  return linePointer;
 }
 
 /**
  * Shows quick pick window.
  *
- * @param {String[]} qucikPickList
+ * @param {String[]} quickPickList
  */
 export function showQuickPickWindow(quickPickList: QuickPickItem[]) {
   if (quickPickList.length === 1) {

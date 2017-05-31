@@ -28,6 +28,7 @@ When editing a file, use the command palette (cmd + shift + p / ctrl + shift + p
 * Supports in-house GitHub installations.
 * Works with Bitbucket.
 * Configurable default branch.
+* Open multiline selection.
 
 ## Configuration
 

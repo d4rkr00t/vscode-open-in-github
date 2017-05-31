@@ -43,7 +43,6 @@ Add these lines to the workspace settings:
 ```
 
 ## TODO
-* Support Multiline Selections
 * Open Repository
 * Open Pull Request related to the file
 

@@ -5,12 +5,13 @@
     "version": "1.6.0",
     "publisher": "sysoev",
     "engines": {
-        "vscode": "^1.0.0"
+        "vscode": "^1.18.0"
     },
     "categories": [
         "Other"
     ],
     "keywords": [
+        "multi-root ready",
         "vscode",
         "github",
         "bitbucket",
@@ -49,11 +50,13 @@
             "title": "Which branch is default in repository.",
             "properties": {
                 "openInGitHub.defaultBranch": {
+                    "scope": "resource",
                     "type": "string",
                     "default": "master",
                     "description": "Controls which branch will be treated as default."
                 },
                 "openInGitHub.defaultRemote": {
+                    "scope": "resource",
                     "type": "string",
                     "default": "origin",
                     "description": "Controls which remote will be treated as default."

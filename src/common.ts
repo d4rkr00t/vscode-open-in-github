@@ -31,12 +31,13 @@ export function baseCommand(commandName: string, formatters: Formatters) {
   }
 
   const filePath = window.activeTextEditor.document.fileName;
+  const fileUri = window.activeTextEditor.document.uri;
   const lineStart = window.activeTextEditor.selection.start.line + 1;
   const lineEnd = window.activeTextEditor.selection.end.line + 1;
   const selectedLines = { start: lineStart, end: lineEnd };
-  const defaultBranch = workspace.getConfiguration('openInGitHub').get<string>('defaultBranch') || 'master';
-  const defaultRemote = workspace.getConfiguration('openInGitHub').get<string>('defaultRemote') || 'origin';
-  const projectPath = workspace.rootPath;
+  const defaultBranch = workspace.getConfiguration('openInGitHub', fileUri).get<string>('defaultBranch') || 'master';
+  const defaultRemote = workspace.getConfiguration('openInGitHub', fileUri).get<string>('defaultRemote') || 'origin';
+  const projectPath = path.dirname(filePath);
 
   return getRepoRoot(exec, projectPath)
     .then(repoRootPath => {

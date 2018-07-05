@@ -88,7 +88,7 @@ suite('#getBranches', () => {
 
   test('should return current branch', done => {
     common
-      .getBranches((cmd, opts, cb) => cb(null, mockBranchResult, null), '', 'dev')
+      .getBranches((cmd, opts, cb) => cb(null, mockBranchResult, null), '', 'dev', true)
       .then((branch) => {
         assert.deepEqual(branch, ['sysoev/SERP-42779', 'dev']);
         done();
@@ -98,7 +98,7 @@ suite('#getBranches', () => {
 
   test('should return empty string if there aren`t any remotes with the name of current branch', done => {
     common
-      .getBranches((cmd, opts, cb) => cb(null, mockBranchResultNoRemotes, null), '', 'dev')
+      .getBranches((cmd, opts, cb) => cb(null, mockBranchResultNoRemotes, null), '', 'dev', true)
       .then((branch) => {
         !branch.length && done();
       })
@@ -108,6 +108,27 @@ suite('#getBranches', () => {
   test('should be rejected if error occured', done => {
     common
       .getBranches((cmd, opts, cb) => cb(null, mockBranchResult, 'error'), '', 'dev')
+      .then(done)
+      .catch(() => done());
+  });
+});
+
+suite('#getCurrentRevision', () => {
+  const mockRevisionResult = 'abc123\n';
+
+  test('should return current revision, with newline stripped', done => {
+    common
+      .getCurrentRevision((cmd, opts, cb) => cb(null, mockRevisionResult, null), '')
+      .then((branch) => {
+        assert.deepEqual(branch, 'abc123');
+        done();
+      })
+      .catch(done);
+  });
+
+  test('should be rejected if error occurred', done => {
+    common
+      .getCurrentRevision((cmd, opts, cb) => cb(null, mockRevisionResult, 'error'), '')
       .then(done)
       .catch(() => done());
   });

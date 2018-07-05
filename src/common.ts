@@ -40,6 +40,7 @@ export function baseCommand(commandName: string, formatters: Formatters) {
   const defaultBranch = workspace.getConfiguration('openInGitHub', fileUri).get<string>('defaultBranch') || 'master';
   const defaultRemote = workspace.getConfiguration('openInGitHub', fileUri).get<string>('defaultRemote') || 'origin';
   const maxBuffer = workspace.getConfiguration('openInGithub', fileUri).get<number>('maxBuffer') || undefined;
+  const excludeCurrentRevision = workspace.getConfiguration('openInGitHub').get<boolean>('excludeCurrentRevision') || false;
   const repositoryType = config.get<string>('repositoryType');
   const projectPath = path.dirname(filePath);
 
@@ -47,7 +48,7 @@ export function baseCommand(commandName: string, formatters: Formatters) {
     .then(repoRootPath => {
       const relativeFilePath = path.relative(repoRootPath, filePath);
 
-      return getBranches(exec, projectPath, defaultBranch, maxBuffer)
+      return getBranches(exec, projectPath, defaultBranch, maxBuffer, excludeCurrentRevision)
         .then(branches => {
           const getRemotesPromise =
             getRemotes(exec, projectPath, defaultRemote, defaultBranch, branches).then(formatRemotes);
@@ -199,7 +200,7 @@ export function formatRemotes(remotes: string[]) : string[] {
  *
  * @return {Promise<String>}
  */
-export function getBranches(exec, projectPath: string, defaultBranch: string, maxBuffer?: number) : Promise<string[]> {
+export function getBranches(exec, projectPath: string, defaultBranch: string, maxBuffer?: number, excludeCurrentRevision?: boolean) : Promise<string[]> {
   return new Promise((resolve, reject) => {
     const options: any = { cwd: projectPath };
     if (maxBuffer) options.maxBuffer = maxBuffer;
@@ -222,7 +223,30 @@ export function getBranches(exec, projectPath: string, defaultBranch: string, ma
       const currentBranch = getCurrentBranch(stdout);
       const branches = processBranches([currentBranch, defaultBranch]);
 
-      resolve(branches);
+      return excludeCurrentRevision
+        ? resolve(branches)
+        : getCurrentRevision(exec, projectPath)
+            .then((currentRevision) => {
+              return resolve(branches.concat(currentRevision));
+            });
+    });
+  });
+}
+
+/**
+ * Returns the commit sha for HEAD.
+ *
+ * @param {Function} exec
+ * @param {String} projectPath
+ * @param {String} defaultBranch
+ *
+ * @return {Promise<String>}
+ */
+export function getCurrentRevision(exec, projectPath: string) : Promise<string> {
+  return new Promise((resolve, reject) => {
+    exec('git rev-parse HEAD', { cwd: projectPath }, (error, stdout, stderr) => {
+      if (stderr || error) return reject(stderr || error);
+      resolve(stdout.trim());
     });
   });
 }
@@ -258,7 +282,6 @@ export function prepareQuickPickItems(repositoryType: string, formatters: Format
 
   const processBranches = R.compose(
     R.flatten,
-    (result) => R.zip(result[0], result[1]),
     R.map(branch => formatQuickPickItems(repositoryType, formatters, commandName, relativeFilePath, lines, remotes, branch))
   );
 

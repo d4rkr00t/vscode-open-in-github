@@ -84,6 +84,12 @@
                     "type": "number",
                     "default": 204800,
                     "description": "Controls the `maxBuffer` allowed when executing git commands."
+                },
+                "openInGitHub.excludeCurrentRevision": {
+                    "scope": "resource",
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Determines whether to disable URL suggestions for the current revision (commit SHA)"
                 }
             }
         }

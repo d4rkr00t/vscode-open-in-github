@@ -29,6 +29,7 @@ When editing a file, use the command palette (cmd + shift + p / ctrl + shift + p
 * Works with Bitbucket.
 * Configurable default branch.
 * Open multiline selection.
+* Open the current revision.
 
 ## Configuration
 
@@ -39,6 +40,7 @@ Add these lines to the workspace settings:
   ...
   "openInGitHub.defaultBranch": "master",
   "openInGitHub.defaultRemote": "origin",
+  "openInGitHub.includeCurrentRevision": true,
   ...
 }
 ```

@@ -111,6 +111,27 @@ suite('#getBranches', () => {
   });
 });
 
+suite('#getCurrentRevision', () => {
+  const mockRevisionResult = 'abc123\n';
+
+  test('should return current revision, with newline stripped', done => {
+    common
+      .getCurrentRevision((cmd, opts, cb) => cb(null, mockRevisionResult, null), '')
+      .then((branch) => {
+        assert.deepEqual(branch, 'abc123');
+        done();
+      })
+      .catch(done);
+  });
+
+  test('should be rejected if error occurred', done => {
+    common
+      .getCurrentRevision((cmd, opts, cb) => cb(null, mockRevisionResult, 'error'), '')
+      .then(done)
+      .catch(() => done());
+  });
+});
+
 suite('#prepareQuickPickItems', () => {
   const formatters = { github: () => '', bitbucket: () => '' };
   suite('if current branch and master branch are equal', () => {

@@ -37,14 +37,14 @@ export function baseCommand(commandName: string, formatters: Formatters) {
   const selectedLines = { start: lineStart, end: lineEnd };
   const defaultBranch = workspace.getConfiguration('openInGitHub', fileUri).get<string>('defaultBranch') || 'master';
   const defaultRemote = workspace.getConfiguration('openInGitHub', fileUri).get<string>('defaultRemote') || 'origin';
-  const includeCurrentRevision = workspace.getConfiguration('openInGitHub').get<boolean>('includeCurrentRevision') || false;
+  const excludeCurrentRevision = workspace.getConfiguration('openInGitHub').get<boolean>('excludeCurrentRevision') || false;
   const projectPath = path.dirname(filePath);
 
   return getRepoRoot(exec, projectPath)
     .then(repoRootPath => {
       const relativeFilePath = path.relative(repoRootPath, filePath);
 
-      return getBranches(exec, projectPath, defaultBranch, includeCurrentRevision)
+      return getBranches(exec, projectPath, defaultBranch, excludeCurrentRevision)
         .then(branches => {
           const getRemotesPromise =
             getRemotes(exec, projectPath, defaultRemote, defaultBranch, branches).then(formatRemotes);
@@ -195,7 +195,7 @@ export function formatRemotes(remotes: string[]) : string[] {
  *
  * @return {Promise<String>}
  */
-export function getBranches(exec, projectPath: string, defaultBranch: string, includeCurrentRevision?: boolean) : Promise<string[]> {
+export function getBranches(exec, projectPath: string, defaultBranch: string, excludeCurrentRevision?: boolean) : Promise<string[]> {
   return new Promise((resolve, reject) => {
     exec('git branch --no-color -a', { cwd: projectPath }, (error, stdout, stderr) => {
       if (stderr || error) return reject(stderr || error);
@@ -215,12 +215,12 @@ export function getBranches(exec, projectPath: string, defaultBranch: string, in
       const currentBranch = getCurrentBranch(stdout);
       const branches = processBranches([currentBranch, defaultBranch]);
 
-      return includeCurrentRevision
-        ? getCurrentRevision(exec, projectPath)
-          .then((currentRevision) => {
-            return resolve(branches.concat(currentRevision));
-          })
-        : resolve(branches);
+      return excludeCurrentRevision
+        ? resolve(branches)
+        : getCurrentRevision(exec, projectPath)
+            .then((currentRevision) => {
+              return resolve(branches.concat(currentRevision));
+            });
     });
   });
 }

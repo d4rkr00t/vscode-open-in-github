@@ -40,7 +40,7 @@ Add these lines to the workspace settings:
   ...
   "openInGitHub.defaultBranch": "master",
   "openInGitHub.defaultRemote": "origin",
-  "openInGitHub.includeCurrentRevision": true,
+  "openInGitHub.excludeCurrentRevision": false,
   ...
 }
 ```

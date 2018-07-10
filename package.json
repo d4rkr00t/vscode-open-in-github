@@ -61,11 +61,11 @@
                     "default": "origin",
                     "description": "Controls which remote will be treated as default."
                 },
-                "openInGitHub.includeCurrentRevision": {
+                "openInGitHub.excludeCurrentRevision": {
                     "scope": "resource",
                     "type": "boolean",
                     "default": false,
-                    "description": "Determines whether to suggest a URL for the current revision (commit SHA)"
+                    "description": "Determines whether to disable URL suggestions for the current revision (commit SHA)"
                 }
             }
         }

@@ -86,7 +86,7 @@ suite('#getBranches', () => {
 
   test('should return current branch', done => {
     common
-      .getBranches((cmd, opts, cb) => cb(null, mockBranchResult, null), '', 'dev')
+      .getBranches((cmd, opts, cb) => cb(null, mockBranchResult, null), '', 'dev', true)
       .then((branch) => {
         assert.deepEqual(branch, ['sysoev/SERP-42779', 'dev']);
         done();
@@ -96,7 +96,7 @@ suite('#getBranches', () => {
 
   test('should return empty string if there aren`t any remotes with the name of current branch', done => {
     common
-      .getBranches((cmd, opts, cb) => cb(null, mockBranchResultNoRemotes, null), '', 'dev')
+      .getBranches((cmd, opts, cb) => cb(null, mockBranchResultNoRemotes, null), '', 'dev', true)
       .then((branch) => {
         !branch.length && done();
       })

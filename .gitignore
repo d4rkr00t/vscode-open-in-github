@@ -2,3 +2,4 @@ out
 node_modules
 !typings
 !.vscode
+package-lock.json

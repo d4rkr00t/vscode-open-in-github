@@ -47,7 +47,7 @@
         ],
         "configuration": {
             "type": "object",
-            "title": "Which branch is default in repository.",
+            "title": "Open In GitHub.",
             "properties": {
                 "openInGitHub.defaultBranch": {
                     "scope": "resource",
@@ -71,13 +71,13 @@
         "postinstall": "node ./node_modules/vscode/bin/install"
     },
     "devDependencies": {
-        "@types/mocha": "^2.2.32",
-        "@types/node": "^6.0.45",
-        "@types/ramda": "0.0.2",
-        "commitizen": "^2.8.1",
-        "cz-conventional-changelog": "^1.1.6",
-        "typescript": "^2.0.3",
-        "vscode": "^1.0.0"
+        "@types/mocha": "^5.2.4",
+        "@types/node": "^10.5.2",
+        "@types/ramda": "^0.25.34",
+        "commitizen": "^2.10.1",
+        "cz-conventional-changelog": "^2.1.0",
+        "typescript": "^2.9.2",
+        "vscode": "^1.1.18"
     },
     "config": {
         "commitizen": {
@@ -85,7 +85,7 @@
         }
     },
     "dependencies": {
-        "opn": "^4.0.2",
-        "ramda": "^0.22.1"
+        "opn": "^5.3.0",
+        "ramda": "^0.25.0"
     }
 }

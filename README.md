@@ -39,6 +39,7 @@ Add these lines to the workspace settings:
   ...
   "openInGitHub.defaultBranch": "master",
   "openInGitHub.defaultRemote": "origin",
+  "openInGithub.maxBuffer": 512000
   ...
 }
 ```

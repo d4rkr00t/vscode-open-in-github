@@ -60,6 +60,12 @@
                     "type": "string",
                     "default": "origin",
                     "description": "Controls which remote will be treated as default."
+                },
+                "openInGithub.maxBuffer": {
+                  "scope": "resource",
+                  "type": "number",
+                  "default": "204800",
+                  "description": "Controls the `maxBuffer` allowed when executing git commands."
                 }
             }
         }

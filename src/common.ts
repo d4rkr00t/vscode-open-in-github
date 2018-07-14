@@ -195,9 +195,12 @@ export function formatRemotes(remotes: string[]) : string[] {
  *
  * @return {Promise<String>}
  */
-export function getBranches(exec, projectPath: string, defaultBranch: string, maxBuffer: number) : Promise<string[]> {
+export function getBranches(exec, projectPath: string, defaultBranch: string, maxBuffer?: number) : Promise<string[]> {
   return new Promise((resolve, reject) => {
-    exec('git branch --no-color -a', { cwd: projectPath, maxBuffer }, (error, stdout, stderr) => {
+    const options: any = { cwd: projectPath };
+    if (maxBuffer) options.maxBuffer = maxBuffer;
+
+    exec('git branch --no-color -a', options, (error, stdout, stderr) => {
       if (stderr || error) return reject(stderr || error);
 
       const getCurrentBranch = R.compose(

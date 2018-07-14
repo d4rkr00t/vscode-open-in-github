@@ -37,13 +37,14 @@ export function baseCommand(commandName: string, formatters: Formatters) {
   const selectedLines = { start: lineStart, end: lineEnd };
   const defaultBranch = workspace.getConfiguration('openInGitHub', fileUri).get<string>('defaultBranch') || 'master';
   const defaultRemote = workspace.getConfiguration('openInGitHub', fileUri).get<string>('defaultRemote') || 'origin';
+  const maxBuffer = workspace.getConfiguration('openInGithub', fileUri).get<number>('maxBuffer') || 200 * 1024;
   const projectPath = path.dirname(filePath);
 
   return getRepoRoot(exec, projectPath)
     .then(repoRootPath => {
       const relativeFilePath = path.relative(repoRootPath, filePath);
 
-      return getBranches(exec, projectPath, defaultBranch)
+      return getBranches(exec, projectPath, defaultBranch, maxBuffer)
         .then(branches => {
           const getRemotesPromise =
             getRemotes(exec, projectPath, defaultRemote, defaultBranch, branches).then(formatRemotes);
@@ -194,9 +195,9 @@ export function formatRemotes(remotes: string[]) : string[] {
  *
  * @return {Promise<String>}
  */
-export function getBranches(exec, projectPath: string, defaultBranch: string) : Promise<string[]> {
+export function getBranches(exec, projectPath: string, defaultBranch: string, maxBuffer: number) : Promise<string[]> {
   return new Promise((resolve, reject) => {
-    exec('git branch --no-color -a', { cwd: projectPath }, (error, stdout, stderr) => {
+    exec('git branch --no-color -a', { cwd: projectPath, maxBuffer }, (error, stdout, stderr) => {
       if (stderr || error) return reject(stderr || error);
 
       const getCurrentBranch = R.compose(

@@ -37,7 +37,7 @@ export function baseCommand(commandName: string, formatters: Formatters) {
   const selectedLines = { start: lineStart, end: lineEnd };
   const defaultBranch = workspace.getConfiguration('openInGitHub', fileUri).get<string>('defaultBranch') || 'master';
   const defaultRemote = workspace.getConfiguration('openInGitHub', fileUri).get<string>('defaultRemote') || 'origin';
-  const maxBuffer = workspace.getConfiguration('openInGithub', fileUri).get<number>('maxBuffer') || 200 * 1024;
+  const maxBuffer = workspace.getConfiguration('openInGithub', fileUri).get<number>('maxBuffer') || undefined;
   const projectPath = path.dirname(filePath);
 
   return getRepoRoot(exec, projectPath)

@@ -64,7 +64,7 @@
                 "openInGithub.maxBuffer": {
                   "scope": "resource",
                   "type": "number",
-                  "default": "204800",
+                  "default": 204800,
                   "description": "Controls the `maxBuffer` allowed when executing git commands."
                 }
             }

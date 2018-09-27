@@ -161,6 +161,7 @@ export function formatRemotes(remotes: string[]) : string[] {
       rem.match(/github\.com/)
         ? rem.replace(/\.git(\b|$)/, '')
         : rem),
+    R.reject(R.isNil),
     R.map(rem => {
       if (rem.match(/^https?:/)) {
         return rem.replace(/\.git(\b|$)/, '');

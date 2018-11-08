@@ -9,7 +9,8 @@ export const BRANCH_URL_SEP = ' — ';
 
 interface Formatters {
   github: Function,
-  bitbucket: Function
+  bitbucket: Function,
+  bitbucketServer: Function
 }
 
 export interface SelectedLines {
@@ -31,12 +32,13 @@ export function baseCommand(commandName: string, formatters: Formatters) {
   }
 
   const filePath = window.activeTextEditor.document.fileName;
-  const fileUri = window.activeTextEditor.document.uri;
   const lineStart = window.activeTextEditor.selection.start.line + 1;
   const lineEnd = window.activeTextEditor.selection.end.line + 1;
   const selectedLines = { start: lineStart, end: lineEnd };
-  const defaultBranch = workspace.getConfiguration('openInGitHub', fileUri).get<string>('defaultBranch') || 'master';
-  const defaultRemote = workspace.getConfiguration('openInGitHub', fileUri).get<string>('defaultRemote') || 'origin';
+  const config =  workspace.getConfiguration('openInGitHub', window.activeTextEditor.document.uri);
+  const defaultBranch = config.get<string>('defaultBranch') || 'master';
+  const defaultRemote = config.get<string>('defaultRemote') || 'origin';
+  const repositoryType = config.get<string>('repositoryType');
   const projectPath = path.dirname(filePath);
 
   return getRepoRoot(exec, projectPath)
@@ -49,7 +51,7 @@ export function baseCommand(commandName: string, formatters: Formatters) {
             getRemotes(exec, projectPath, defaultRemote, defaultBranch, branches).then(formatRemotes);
           return Promise.all([getRemotesPromise, branches])
         })
-        .then(result => prepareQuickPickItems(formatters, commandName, relativeFilePath, selectedLines, result))
+        .then(result => prepareQuickPickItems(repositoryType, formatters, commandName, relativeFilePath, selectedLines, result))
         .then(showQuickPickWindow)
         .catch(err => window.showErrorMessage(err));
     });
@@ -219,12 +221,10 @@ export function getBranches(exec, projectPath: string, defaultBranch: string) : 
   });
 }
 
-export function formatQuickPickItems(formatters: Formatters, commandName: string, relativeFilePath: string, lines: SelectedLines, remotes: string[], branch: string): QuickPickItem[] {
+export function formatQuickPickItems(repositoryType: string, formatters: Formatters, commandName: string, relativeFilePath: string, lines: SelectedLines, remotes: string[], branch: string): QuickPickItem[] {
   return remotes
     .map(remote => (
-      isBitbucket(remote)
-        ? { remote, url: formatters.bitbucket(remote, branch, relativeFilePath, lines) }
-        : { remote, url: formatters.github(remote, branch, relativeFilePath, lines) }))
+      { remote, url: chooseFormatter(formatters, repositoryType, remote)(remote, branch, relativeFilePath, lines) }))
     .map(remote => ({
       label: relativeFilePath,
       detail: `${branch} | ${remote.remote}`,
@@ -241,19 +241,19 @@ export function formatQuickPickItems(formatters: Formatters, commandName: string
  *
  * @return {String[]}
  */
-export function prepareQuickPickItems(formatters: Formatters, commandName: string, relativeFilePath: string, lines: SelectedLines, [remotes, branches]: string[][]): QuickPickItem[] {
+export function prepareQuickPickItems(repositoryType: string, formatters: Formatters, commandName: string, relativeFilePath: string, lines: SelectedLines, [remotes, branches]: string[][]): QuickPickItem[] {
   if (!branches.length) {
     return [];
   }
 
   if (branches.length === 1) {
-    return formatQuickPickItems(formatters, commandName, relativeFilePath, lines, remotes, branches[0]);
+    return formatQuickPickItems(repositoryType, formatters, commandName, relativeFilePath, lines, remotes, branches[0]);
   }
 
   const processBranches = R.compose(
     R.flatten,
     (result) => R.zip(result[0], result[1]),
-    R.map(branch => formatQuickPickItems(formatters, commandName, relativeFilePath, lines, remotes, branch))
+    R.map(branch => formatQuickPickItems(repositoryType, formatters, commandName, relativeFilePath, lines, remotes, branch))
   );
 
   return processBranches(branches);
@@ -314,4 +314,16 @@ export function showQuickPickWindow(quickPickList: QuickPickItem[]) {
 export function openQuickPickItem(item?: QuickPickItem) {
   if (!item) return;
   opn((item as any).url);
+}
+
+/**
+ * Chooses proper formater based on repository type.
+ */
+function chooseFormatter(formatters: Formatters, repositoryType: string, remote: string): Function {
+  switch (repositoryType) {
+    case "auto": return isBitbucket(remote) ? formatters.bitbucket : formatters.github;
+    case "github": return formatters.github;
+    case "bitbucket": return formatters.bitbucket;
+    case "bitbucket-server": return formatters.bitbucketServer;
+  }
 }

@@ -47,7 +47,8 @@ suite('#formatRemotes', () => {
     'ftps://host.xz/path/to/repo.git/',
     'http://host.xz/path/to/repo.git/',
     'ftp://host.xz/path/to/repo.git/',
-    'https://user@github.com/some/repo.git'
+    'https://user@github.com/some/repo.git',
+    '../other'
   ];
 
   test('should correctly format all types of git remote urls', () => {
@@ -67,6 +68,7 @@ suite('#formatRemotes', () => {
         'http://host.xz/path/to/repo',
         'http://host.xz/path/to/repo.git',
         'https://github.com/some/repo',
+        undefined
       ]
     );
   });

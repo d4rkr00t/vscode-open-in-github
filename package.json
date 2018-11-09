@@ -95,10 +95,10 @@
         "postinstall": "node ./node_modules/vscode/bin/install"
     },
     "devDependencies": {
-        "@types/mocha": "^2.2.32",
-        "@types/node": "^6.0.45",
-        "@types/ramda": "0.0.2",
-        "typescript": "^2.0.3",
+        "@types/mocha": "^5.2.5",
+        "@types/node": "^10.12.3",
+        "@types/ramda": "^0.25.41",
+        "typescript": "^3.1.6",
         "vscode": "^1.1.21"
     },
     "config": {
@@ -107,7 +107,7 @@
         }
     },
     "dependencies": {
-        "opn": "^4.0.2",
-        "ramda": "^0.22.1"
+        "opn": "^5.4.0",
+        "ramda": "^0.25.0"
     }
 }

@@ -282,9 +282,10 @@ export function prepareQuickPickItems(repositoryType: string, formatters: Format
 
   const processBranches = R.compose(
     R.flatten,
+    // Join: [1,2,3], [4,5,6], [7,8,9] -> [1,4,7], [2,5,8], [3,6,9]
+    (results) => R.map((i) => R.map((item) => item[i], results), R.range(0, results[0].length)),
     R.map(branch => formatQuickPickItems(repositoryType, formatters, commandName, relativeFilePath, lines, remotes, branch))
   );
-
   return processBranches(branches);
 }
 

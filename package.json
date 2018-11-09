@@ -61,10 +61,9 @@
                     "default": "origin",
                     "description": "Controls which remote will be treated as default."
                 },
-
                 "openInGitHub.repositoryType": {
                     "scope": "resource",
-                    "type":"string",
+                    "type": "string",
                     "default": "auto",
                     "enum": [
                         "auto",
@@ -80,12 +79,11 @@
                     ],
                     "description": "Defines type of repository"
                 },
-              
                 "openInGithub.maxBuffer": {
-                  "scope": "resource",
-                  "type": "number",
-                  "default": 204800,
-                  "description": "Controls the `maxBuffer` allowed when executing git commands."
+                    "scope": "resource",
+                    "type": "number",
+                    "default": 204800,
+                    "description": "Controls the `maxBuffer` allowed when executing git commands."
                 }
             }
         }

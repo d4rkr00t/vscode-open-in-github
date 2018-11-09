@@ -32,6 +32,7 @@ export function baseCommand(commandName: string, formatters: Formatters) {
   }
 
   const filePath = window.activeTextEditor.document.fileName;
+  const fileUri = window.activeTextEditor.document.uri;
   const lineStart = window.activeTextEditor.selection.start.line + 1;
   const lineEnd = window.activeTextEditor.selection.end.line + 1;
   const selectedLines = { start: lineStart, end: lineEnd };

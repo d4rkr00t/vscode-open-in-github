@@ -98,8 +98,6 @@
         "@types/mocha": "^2.2.32",
         "@types/node": "^6.0.45",
         "@types/ramda": "0.0.2",
-        "commitizen": "^3.0.4",
-        "cz-conventional-changelog": "^1.1.6",
         "typescript": "^2.0.3",
         "vscode": "^1.1.21"
     },

@@ -61,6 +61,26 @@
                     "default": "origin",
                     "description": "Controls which remote will be treated as default."
                 },
+
+                "openInGitHub.repositoryType": {
+                    "scope": "resource",
+                    "type":"string",
+                    "default": "auto",
+                    "enum": [
+                        "auto",
+                        "github",
+                        "bitbucket",
+                        "bitbucket-server"
+                    ],
+                    "enumDescriptions": [
+                        "Auto detection of repository type",
+                        "Github",
+                        "Bitbucket",
+                        "Bitbucket Server (uses /projects/<project>/repos/<repo> repository URL scheme)"
+                    ],
+                    "description": "Defines type of repository"
+                },
+              
                 "openInGithub.maxBuffer": {
                   "scope": "resource",
                   "type": "number",

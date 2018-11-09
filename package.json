@@ -47,7 +47,7 @@
         ],
         "configuration": {
             "type": "object",
-            "title": "Which branch is default in repository.",
+            "title": "Open in GitHub",
             "properties": {
                 "openInGitHub.defaultBranch": {
                     "scope": "resource",

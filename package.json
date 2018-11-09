@@ -61,6 +61,7 @@
                     "default": "origin",
                     "description": "Controls which remote will be treated as default."
                 },
+
                 "openInGitHub.repositoryType": {
                     "scope": "resource",
                     "type":"string",
@@ -78,6 +79,13 @@
                         "Bitbucket Server (uses /projects/<project>/repos/<repo> repository URL scheme)"
                     ],
                     "description": "Defines type of repository"
+                },
+              
+                "openInGithub.maxBuffer": {
+                  "scope": "resource",
+                  "type": "number",
+                  "default": 204800,
+                  "description": "Controls the `maxBuffer` allowed when executing git commands."
                 }
             }
         }

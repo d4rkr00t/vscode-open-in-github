@@ -36,8 +36,9 @@ export function baseCommand(commandName: string, formatters: Formatters) {
   const lineEnd = window.activeTextEditor.selection.end.line + 1;
   const selectedLines = { start: lineStart, end: lineEnd };
   const config =  workspace.getConfiguration('openInGitHub', window.activeTextEditor.document.uri);
-  const defaultBranch = config.get<string>('defaultBranch') || 'master';
-  const defaultRemote = config.get<string>('defaultRemote') || 'origin';
+  const defaultBranch = workspace.getConfiguration('openInGitHub', fileUri).get<string>('defaultBranch') || 'master';
+  const defaultRemote = workspace.getConfiguration('openInGitHub', fileUri).get<string>('defaultRemote') || 'origin';
+  const maxBuffer = workspace.getConfiguration('openInGithub', fileUri).get<number>('maxBuffer') || undefined;
   const repositoryType = config.get<string>('repositoryType');
   const projectPath = path.dirname(filePath);
 
@@ -45,7 +46,7 @@ export function baseCommand(commandName: string, formatters: Formatters) {
     .then(repoRootPath => {
       const relativeFilePath = path.relative(repoRootPath, filePath);
 
-      return getBranches(exec, projectPath, defaultBranch)
+      return getBranches(exec, projectPath, defaultBranch, maxBuffer)
         .then(branches => {
           const getRemotesPromise =
             getRemotes(exec, projectPath, defaultRemote, defaultBranch, branches).then(formatRemotes);
@@ -196,9 +197,12 @@ export function formatRemotes(remotes: string[]) : string[] {
  *
  * @return {Promise<String>}
  */
-export function getBranches(exec, projectPath: string, defaultBranch: string) : Promise<string[]> {
+export function getBranches(exec, projectPath: string, defaultBranch: string, maxBuffer?: number) : Promise<string[]> {
   return new Promise((resolve, reject) => {
-    exec('git branch --no-color -a', { cwd: projectPath }, (error, stdout, stderr) => {
+    const options: any = { cwd: projectPath };
+    if (maxBuffer) options.maxBuffer = maxBuffer;
+
+    exec('git branch --no-color -a', options, (error, stdout, stderr) => {
       if (stderr || error) return reject(stderr || error);
 
       const getCurrentBranch = R.compose(

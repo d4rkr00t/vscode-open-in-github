@@ -1,5 +1,5 @@
 import { window, workspace } from 'vscode';
-import { baseCommand, formatBitbucketLinePointer, formatGitHubLinePointer, SelectedLines } from './common';
+import { baseCommand, formatBitbucketLinePointer, formatGitHubLinePointer, formatGithubBranchName, SelectedLines } from './common';
 import { formatBitbucketServerUrl } from './bitbucketServer';
 
 export default function blameCommand() {
@@ -7,7 +7,7 @@ export default function blameCommand() {
 }
 
 export function formatGitHubBlameUrl(remote: string, branch: string, filePath: string, lines?: SelectedLines): string {
-  return `${remote}/blame/${branch}/${filePath}${formatGitHubLinePointer(lines)}`;
+  return `${remote}/blame/${formatGithubBranchName(branch)}/${filePath}${formatGitHubLinePointer(lines)}`;
 }
 
 export function formatBitbucketBlameUrl(remote: string, branch: string, filePath: string, lines?: SelectedLines): string {

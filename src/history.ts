@@ -1,5 +1,5 @@
 import { window, workspace } from 'vscode';
-import { baseCommand, BRANCH_URL_SEP, SelectedLines } from './common';
+import { baseCommand, formatGithubBranchName, SelectedLines } from './common';
 import { formatBitbucketServerUrl } from './bitbucketServer';
 
 export default function historyCommand() {
@@ -7,7 +7,7 @@ export default function historyCommand() {
 }
 
 export function formatGitHubHistoryUrl(remote: string, branch: string, filePath: string, lines: SelectedLines): string {
-  return `${remote}/commits/${branch}/${filePath}`;
+  return `${remote}/commits/${formatGithubBranchName(branch)}/${filePath}`;
 }
 
 export function formatBitbucketHistoryUrl(remote: string, branch: string, filePath: string, lines: SelectedLines): string {

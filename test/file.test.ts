@@ -18,6 +18,10 @@ suite('fileCommand # formatGitHubFileUrl', () => {
     const results = file.formatGitHubFileUrl('https://remote.url', 'master', 'rel/path/to/file.js');
     assert.equal(results, 'https://remote.url/blob/master/rel/path/to/file.js');
   });
+  test('should format strings for quick pick view', () => {
+    const results = file.formatGitHubFileUrl('https://remote.url', 'feature/#foo', 'rel/path/to/file.js');
+    assert.equal(results, 'https://remote.url/blob/feature/%23foo/rel/path/to/file.js');
+  });
 });
 
 suite('fileCommand # formatBitbucketFileUrl', () => {

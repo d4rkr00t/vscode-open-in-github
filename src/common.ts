@@ -289,6 +289,10 @@ export function prepareQuickPickItems(repositoryType: string, formatters: Format
   return processBranches(branches);
 }
 
+export function formatGithubBranchName(branch) {
+  return branch.split('/').map(c => encodeURIComponent(c)).join('/');
+}
+
 /**
  * Returns true if remote is butbicket.
  */

@@ -313,7 +313,7 @@ export function formatGitHubLinePointer(lines?: SelectedLines): string {
   }
 
   let linePointer = `#L${lines.start}`;
-  if (lines.end && lines.end != lines.start) linePointer += `:L${lines.end}`;
+  if (lines.end && lines.end != lines.start) linePointer += `-L${lines.end}`;
 
   return linePointer;
 }

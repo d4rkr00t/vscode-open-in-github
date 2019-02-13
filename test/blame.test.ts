@@ -10,7 +10,7 @@ suite('blameCommand # formatGitHubBlameUrl', () => {
 
   test('should format strings for quick pick view', () => {
     const results = blame.formatGitHubBlameUrl('https://remote.url', 'master', 'rel/path/to/file.js', { start: 10, end: 20 });
-    assert.equal(results, 'https://remote.url/blame/master/rel/path/to/file.js#L10:L20');
+    assert.equal(results, 'https://remote.url/blame/master/rel/path/to/file.js#L10-L20');
   });
 
   test('should format strings for quick pick view', () => {

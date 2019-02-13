@@ -8,7 +8,7 @@ suite('fileCommand # formatGitHubFileUrl', () => {
   });
   test('should format strings for quick pick view', () => {
     const results = file.formatGitHubFileUrl('https://remote.url', 'master', 'rel/path/to/file.js', { start: 10, end: 20 });
-    assert.equal(results, 'https://remote.url/blob/master/rel/path/to/file.js#L10:L20');
+    assert.equal(results, 'https://remote.url/blob/master/rel/path/to/file.js#L10-L20');
   });
   test('should format strings for quick pick view', () => {
     const results = file.formatGitHubFileUrl('https://remote.url', 'master', 'rel/path/to/file.js', { start: 10, end: 10 });

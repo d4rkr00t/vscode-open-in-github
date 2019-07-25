@@ -166,3 +166,21 @@ suite('#prepareQuickPickItems', () => {
     });
   });
 });
+
+suite('#wrapExec', () => {
+  const exec = (command, opts, cb) => command;
+
+  suite('if unsetGitDir returns true', () => {
+    const unsetGitDir = () => true;
+    test('should call the wrapped command', () => {
+      assert.equal('unset GIT_DIR; do a thing', common.wrapExec(exec, unsetGitDir)('do a thing', null, null));
+    });
+  })
+
+  suite('if unsetGitDir returns false', () => {
+    const unsetGitDir = () => false;
+    test('should call the unwrapped command', () => {
+      assert.equal('do a thing', common.wrapExec(exec, unsetGitDir)('do a thing', null, null));
+    });
+  })
+});

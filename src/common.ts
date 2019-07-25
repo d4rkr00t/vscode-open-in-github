@@ -27,11 +27,7 @@ export interface SelectedLines {
  * @return {Function}
  */
 export function wrapExec(exec, unsetGitDir: Function) {
-  return R.ifElse(
-    unsetGitDir,
-    (command, opts, cb) => exec(`unset GIT_DIR; ${command}`, opts, cb),
-    exec,
-  );
+  return unsetGitDir() ? (command, opts, cb) => exec(`unset GIT_DIR; ${command}`, opts, cb) : exec;
 }
 
 /**

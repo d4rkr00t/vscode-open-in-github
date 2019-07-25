@@ -80,7 +80,6 @@ export function baseCommand(commandName: string, formatters: Formatters) {
  */
 export function getRepoRoot(exec, workspacePath: string) : Promise<string> {
   return new Promise((resolve, reject) => {
-    console.log(workspacePath);
     exec('git rev-parse --show-toplevel', { cwd: workspacePath }, (error, stdout, stderr) => {
       if (stderr || error) return reject(stderr || error);
       resolve(stdout.trim());

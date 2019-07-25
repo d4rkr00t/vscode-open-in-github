@@ -22,12 +22,12 @@ export interface SelectedLines {
  * Returns the exec command prefixed with `unset GIT_DIR` if the unsetGitDir option is set.
  *
  * @param {Function} exec
- * @param {Function} unsetGitDir
+ * @param {Boolean} unsetGitDir
  *
  * @return {Function}
  */
-export function wrapExec(exec, unsetGitDir: Function) {
-  return unsetGitDir() ? (command, opts, cb) => exec(`unset GIT_DIR; ${command}`, opts, cb) : exec;
+export function wrapExec(exec, unsetGitDir: boolean) {
+  return unsetGitDir ? (command, opts, cb) => exec(`unset GIT_DIR; ${command}`, opts, cb) : exec;
 }
 
 /**
@@ -53,7 +53,7 @@ export function baseCommand(commandName: string, formatters: Formatters) {
   const defaultRemote = workspace.getConfiguration('openInGitHub', fileUri).get<string>('defaultRemote') || 'origin';
   const maxBuffer = workspace.getConfiguration('openInGithub', fileUri).get<number>('maxBuffer') || undefined;
   const excludeCurrentRevision = workspace.getConfiguration('openInGitHub').get<boolean>('excludeCurrentRevision') || false;
-  const unsetGitDir = () => workspace.getConfiguration('openInGithub', fileUri).get<boolean>('unsetGitDir');
+  const unsetGitDir = workspace.getConfiguration('openInGithub', fileUri).get<boolean>('unsetGitDir');
   const exec = wrapExec(childProcessExec, unsetGitDir);
 
   const repositoryType = config.get<string>('repositoryType');

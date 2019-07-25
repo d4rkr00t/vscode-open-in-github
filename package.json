@@ -90,6 +90,12 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Determines whether to disable URL suggestions for the current revision (commit SHA)"
+                },
+                "openInGithub.unsetGitDir": {
+                    "scope":"resource",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Execute `unset GIT_DIR` before all git commands. Vscode provides this env variable which breaks many git commands when run in subdirectories. Disable if you are setting this value yourself."
                 }
             }
         }

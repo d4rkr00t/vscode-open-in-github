@@ -1,6 +1,6 @@
 import { window, workspace, QuickPickItem } from 'vscode';
 
-const exec = require('child_process').exec;
+const childProcessExec = require('child_process').exec;
 const path = require('path');
 const opn = require('opn');
 const R = require('ramda');
@@ -41,6 +41,12 @@ export function baseCommand(commandName: string, formatters: Formatters) {
   const defaultRemote = workspace.getConfiguration('openInGitHub', fileUri).get<string>('defaultRemote') || 'origin';
   const maxBuffer = workspace.getConfiguration('openInGithub', fileUri).get<number>('maxBuffer') || undefined;
   const excludeCurrentRevision = workspace.getConfiguration('openInGitHub').get<boolean>('excludeCurrentRevision') || false;
+  
+  const exec = (command, opts, cb) => {
+    const unsetGitDir = workspace.getConfiguration('openInGithub', fileUri).get<boolean>('unsetGitDir');
+    const wrappedCommand = unsetGitDir ? `unset GIT_DIR; ${command}` : command;
+    return childProcessExec(wrappedCommand, opts, cb);
+  }
   const repositoryType = config.get<string>('repositoryType');
   const projectPath = path.dirname(filePath);
 
@@ -57,6 +63,9 @@ export function baseCommand(commandName: string, formatters: Formatters) {
         .then(result => prepareQuickPickItems(repositoryType, formatters, commandName, relativeFilePath, selectedLines, result))
         .then(showQuickPickWindow)
         .catch(err => window.showErrorMessage(err));
+    })
+    .catch(ex => {
+      window.showErrorMessage(`Unable to find repo root: ${ex}`);
     });
 
 }
@@ -71,6 +80,7 @@ export function baseCommand(commandName: string, formatters: Formatters) {
  */
 export function getRepoRoot(exec, workspacePath: string) : Promise<string> {
   return new Promise((resolve, reject) => {
+    console.log(workspacePath);
     exec('git rev-parse --show-toplevel', { cwd: workspacePath }, (error, stdout, stderr) => {
       if (stderr || error) return reject(stderr || error);
       resolve(stdout.trim());

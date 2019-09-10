@@ -8,9 +8,10 @@ const R = require('ramda');
 export const BRANCH_URL_SEP = ' — ';
 
 interface Formatters {
-  github: Function,
-  bitbucket: Function,
+  github: Function
+  bitbucket: Function
   bitbucketServer: Function
+  gitlab: Function
 }
 
 export interface SelectedLines {
@@ -36,7 +37,7 @@ export function baseCommand(commandName: string, formatters: Formatters) {
   const lineStart = window.activeTextEditor.selection.start.line + 1;
   const lineEnd = window.activeTextEditor.selection.end.line + 1;
   const selectedLines = { start: lineStart, end: lineEnd };
-  const config =  workspace.getConfiguration('openInGitHub', window.activeTextEditor.document.uri);
+  const config = workspace.getConfiguration('openInGitHub', window.activeTextEditor.document.uri);
   const defaultBranch = workspace.getConfiguration('openInGitHub', fileUri).get<string>('defaultBranch') || 'master';
   const defaultRemote = workspace.getConfiguration('openInGitHub', fileUri).get<string>('defaultRemote') || 'origin';
   const maxBuffer = workspace.getConfiguration('openInGithub', fileUri).get<number>('maxBuffer') || undefined;
@@ -69,7 +70,7 @@ export function baseCommand(commandName: string, formatters: Formatters) {
  *
  * @return {Promise<String>}
  */
-export function getRepoRoot(exec, workspacePath: string) : Promise<string> {
+export function getRepoRoot(exec, workspacePath: string): Promise<string> {
   return new Promise((resolve, reject) => {
     exec('git rev-parse --show-toplevel', { cwd: workspacePath }, (error, stdout, stderr) => {
       if (stderr || error) return reject(stderr || error);
@@ -110,7 +111,7 @@ export function getRemotes(exec, projectPath: string, defaultRemote: string, def
  *
  * @return {Promise<String[]>}
  */
-export function getAllRemotes(exec, projectPath: string) : Promise<string[]> {
+export function getAllRemotes(exec, projectPath: string): Promise<string[]> {
   const process = R.compose(
     R.uniq,
     R.map(R.head),
@@ -138,7 +139,7 @@ export function getAllRemotes(exec, projectPath: string) : Promise<string[]> {
  *
  * @return {Promise<String[]>}
  */
-export function getRemoteByName(exec, projectPath: string, remoteName: string) : Promise<string[]> {
+export function getRemoteByName(exec, projectPath: string, remoteName: string): Promise<string[]> {
   return new Promise((resolve, reject) => {
     exec(`git config --get remote.${remoteName}.url`, { cwd: projectPath }, (error, stdout, stderr) => {
       if (stderr || error) return reject(stderr || error);
@@ -154,7 +155,7 @@ export function getRemoteByName(exec, projectPath: string, remoteName: string) :
  *
  * @return {String[]}
  */
-export function formatRemotes(remotes: string[]) : string[] {
+export function formatRemotes(remotes: string[]): string[] {
   const process = R.compose(
     R.uniq,
     R.map(R.replace(/\/$/, '')),
@@ -200,7 +201,7 @@ export function formatRemotes(remotes: string[]) : string[] {
  *
  * @return {Promise<String>}
  */
-export function getBranches(exec, projectPath: string, defaultBranch: string, maxBuffer?: number, excludeCurrentRevision?: boolean) : Promise<string[]> {
+export function getBranches(exec, projectPath: string, defaultBranch: string, maxBuffer?: number, excludeCurrentRevision?: boolean): Promise<string[]> {
   return new Promise((resolve, reject) => {
     const options: any = { cwd: projectPath };
     if (maxBuffer) options.maxBuffer = maxBuffer;
@@ -226,9 +227,9 @@ export function getBranches(exec, projectPath: string, defaultBranch: string, ma
       return excludeCurrentRevision
         ? resolve(branches)
         : getCurrentRevision(exec, projectPath)
-            .then((currentRevision) => {
-              return resolve(branches.concat(currentRevision));
-            });
+          .then((currentRevision) => {
+            return resolve(branches.concat(currentRevision));
+          });
     });
   });
 }
@@ -242,7 +243,7 @@ export function getBranches(exec, projectPath: string, defaultBranch: string, ma
  *
  * @return {Promise<String>}
  */
-export function getCurrentRevision(exec, projectPath: string) : Promise<string> {
+export function getCurrentRevision(exec, projectPath: string): Promise<string> {
   return new Promise((resolve, reject) => {
     exec('git rev-parse HEAD', { cwd: projectPath }, (error, stdout, stderr) => {
       if (stderr || error) return reject(stderr || error);
@@ -294,10 +295,17 @@ export function formatGithubBranchName(branch) {
 }
 
 /**
- * Returns true if remote is butbicket.
+ * Returns true if remote is bitbucket.
  */
 export function isBitbucket(remote: string): boolean {
   return !!remote.match('bitbucket.org');
+}
+
+/**
+ * Returns true if remote is gitlab.
+ */
+export function isGitlab(remote: string): boolean {
+  return !!remote.match('gitlab.com');
 }
 
 export function formatBitbucketLinePointer(filePath: string, lines?: SelectedLines): string {
@@ -318,6 +326,17 @@ export function formatGitHubLinePointer(lines?: SelectedLines): string {
 
   let linePointer = `#L${lines.start}`;
   if (lines.end && lines.end != lines.start) linePointer += `-L${lines.end}`;
+
+  return linePointer;
+}
+
+export function formatGitlabLinePointer(lines?: SelectedLines): string {
+  if (!lines || !lines.start) {
+    return '';
+  }
+
+  let linePointer = `#L${lines.start}`;
+  if (lines.end && lines.end != lines.start) linePointer += `-${lines.end}`;
 
   return linePointer;
 }
@@ -351,13 +370,24 @@ export function openQuickPickItem(item?: QuickPickItem) {
 }
 
 /**
- * Chooses proper formater based on repository type.
+ * Chooses proper formatter based on repository type.
  */
 function chooseFormatter(formatters: Formatters, repositoryType: string, remote: string): Function {
   switch (repositoryType) {
-    case "auto": return isBitbucket(remote) ? formatters.bitbucket : formatters.github;
+    case "auto": {
+      if (isBitbucket(remote)) {
+        return formatters.bitbucket
+      }
+
+      if (isGitlab(remote)) {
+        return formatters.gitlab
+      }
+
+      return formatters.github
+    }
     case "github": return formatters.github;
     case "bitbucket": return formatters.bitbucket;
     case "bitbucket-server": return formatters.bitbucketServer;
+    case "gitlab": return formatters.gitlab;
   }
 }

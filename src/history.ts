@@ -3,7 +3,12 @@ import { baseCommand, formatGithubBranchName, SelectedLines } from './common';
 import { formatBitbucketServerUrl } from './bitbucketServer';
 
 export default function historyCommand() {
-  baseCommand('history', { github: formatGitHubHistoryUrl, bitbucket: formatBitbucketHistoryUrl, bitbucketServer: formatBitbucketServerUrl });
+  baseCommand('history', {
+    github: formatGitHubHistoryUrl,
+    bitbucket: formatBitbucketHistoryUrl,
+    bitbucketServer: formatBitbucketServerUrl,
+    gitlab: formatGitHubHistoryUrl,
+  });
 }
 
 export function formatGitHubHistoryUrl(remote: string, branch: string, filePath: string, lines: SelectedLines): string {

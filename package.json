@@ -69,13 +69,15 @@
                         "auto",
                         "github",
                         "bitbucket",
-                        "bitbucket-server"
+                        "bitbucket-server",
+                        "gitlab"
                     ],
                     "enumDescriptions": [
                         "Auto detection of repository type",
                         "Github",
                         "Bitbucket",
-                        "Bitbucket Server (uses /projects/<project>/repos/<repo> repository URL scheme)"
+                        "Bitbucket Server (uses /projects/<project>/repos/<repo> repository URL scheme)",
+                        "Gitlab"
                     ],
                     "description": "Defines type of repository"
                 },

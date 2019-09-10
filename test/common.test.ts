@@ -135,7 +135,7 @@ suite('#getCurrentRevision', () => {
 });
 
 suite('#prepareQuickPickItems', () => {
-  const formatters = { github: () => '', bitbucket: () => '', bitbucketServer: () => '' };
+  const formatters = { github: () => '', bitbucket: () => '', bitbucketServer: () => '', gitlab: () => '' };
   suite('if current branch and master branch are equal', () => {
     test('should return only 1 item if there is only 1 remote', () => {
       const result = common.prepareQuickPickItems('auto', formatters, 'test-command', 'file.js', { start: 10 }, [['https://rem'], ['master']]);

@@ -26,7 +26,7 @@ When editing a file, use the command palette (cmd + shift + p / ctrl + shift + p
 
 * Supports multiple remotes and branches.
 * Supports in-house GitHub installations.
-* Works with Bitbucket.
+* Works with Bitbucket and Gitlab.
 * Configurable default branch.
 * Open multiline selection.
 * Open the current revision.

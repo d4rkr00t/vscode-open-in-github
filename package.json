@@ -1,121 +1,121 @@
 {
-    "name": "vscode-open-in-github",
-    "displayName": "Open In GitHub",
-    "description": "Provides commands to quickly view the current file on GitHub.",
-    "version": "1.12.0",
-    "publisher": "sysoev",
-    "engines": {
-        "vscode": "^1.18.0"
-    },
-    "categories": [
-        "Other"
+  "name": "vscode-open-in-github",
+  "displayName": "Open In GitHub",
+  "description": "Provides commands to quickly view the current file on GitHub.",
+  "version": "1.13.0",
+  "publisher": "sysoev",
+  "engines": {
+    "vscode": "^1.18.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "multi-root ready",
+    "vscode",
+    "github",
+    "bitbucket",
+    "git"
+  ],
+  "homepage": "https://github.com/d4rkr00t/vscode-open-in-github",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/d4rkr00t/vscode-open-in-github.git"
+  },
+  "bugs": "https://github.com/d4rkr00t/vscode-open-in-github/issues",
+  "main": "./out/src/extension",
+  "icon": "assets/icon.jpg",
+  "activationEvents": [
+    "onCommand:openInGithub.openInGitHubFile",
+    "onCommand:openInGithub.openInGitHubBlame",
+    "onCommand:openInGithub.openInGitHubHistory"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "openInGithub.openInGitHubFile",
+        "title": "Open In GitHub: File"
+      },
+      {
+        "command": "openInGithub.openInGitHubBlame",
+        "title": "Open In GitHub: Blame"
+      },
+      {
+        "command": "openInGithub.openInGitHubHistory",
+        "title": "Open In GitHub: History"
+      }
     ],
-    "keywords": [
-        "multi-root ready",
-        "vscode",
-        "github",
-        "bitbucket",
-        "git"
-    ],
-    "homepage": "https://github.com/d4rkr00t/vscode-open-in-github",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/d4rkr00t/vscode-open-in-github.git"
-    },
-    "bugs": "https://github.com/d4rkr00t/vscode-open-in-github/issues",
-    "main": "./out/src/extension",
-    "icon": "assets/icon.jpg",
-    "activationEvents": [
-        "onCommand:openInGithub.openInGitHubFile",
-        "onCommand:openInGithub.openInGitHubBlame",
-        "onCommand:openInGithub.openInGitHubHistory"
-    ],
-    "contributes": {
-        "commands": [
-            {
-                "command": "openInGithub.openInGitHubFile",
-                "title": "Open In GitHub: File"
-            },
-            {
-                "command": "openInGithub.openInGitHubBlame",
-                "title": "Open In GitHub: Blame"
-            },
-            {
-                "command": "openInGithub.openInGitHubHistory",
-                "title": "Open In GitHub: History"
-            }
-        ],
-        "configuration": {
-            "type": "object",
-            "title": "Open in GitHub",
-            "properties": {
-                "openInGitHub.defaultBranch": {
-                    "scope": "resource",
-                    "type": "string",
-                    "default": "master",
-                    "description": "Controls which branch will be treated as default."
-                },
-                "openInGitHub.defaultRemote": {
-                    "scope": "resource",
-                    "type": "string",
-                    "default": "origin",
-                    "description": "Controls which remote will be treated as default."
-                },
-                "openInGitHub.repositoryType": {
-                    "scope": "resource",
-                    "type": "string",
-                    "default": "auto",
-                    "enum": [
-                        "auto",
-                        "github",
-                        "bitbucket",
-                        "bitbucket-server",
-                        "gitlab"
-                    ],
-                    "enumDescriptions": [
-                        "Auto detection of repository type",
-                        "Github",
-                        "Bitbucket",
-                        "Bitbucket Server (uses /projects/<project>/repos/<repo> repository URL scheme)",
-                        "Gitlab"
-                    ],
-                    "description": "Defines type of repository"
-                },
-                "openInGithub.maxBuffer": {
-                    "scope": "resource",
-                    "type": "number",
-                    "default": 204800,
-                    "description": "Controls the `maxBuffer` allowed when executing git commands."
-                },
-                "openInGitHub.excludeCurrentRevision": {
-                    "scope": "resource",
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Determines whether to disable URL suggestions for the current revision (commit SHA)"
-                }
-            }
+    "configuration": {
+      "type": "object",
+      "title": "Open in GitHub",
+      "properties": {
+        "openInGitHub.defaultBranch": {
+          "scope": "resource",
+          "type": "string",
+          "default": "master",
+          "description": "Controls which branch will be treated as default."
+        },
+        "openInGitHub.defaultRemote": {
+          "scope": "resource",
+          "type": "string",
+          "default": "origin",
+          "description": "Controls which remote will be treated as default."
+        },
+        "openInGitHub.repositoryType": {
+          "scope": "resource",
+          "type": "string",
+          "default": "auto",
+          "enum": [
+            "auto",
+            "github",
+            "bitbucket",
+            "bitbucket-server",
+            "gitlab"
+          ],
+          "enumDescriptions": [
+            "Auto detection of repository type",
+            "Github",
+            "Bitbucket",
+            "Bitbucket Server (uses /projects/<project>/repos/<repo> repository URL scheme)",
+            "Gitlab"
+          ],
+          "description": "Defines type of repository"
+        },
+        "openInGithub.maxBuffer": {
+          "scope": "resource",
+          "type": "number",
+          "default": 204800,
+          "description": "Controls the `maxBuffer` allowed when executing git commands."
+        },
+        "openInGitHub.excludeCurrentRevision": {
+          "scope": "resource",
+          "type": "boolean",
+          "default": false,
+          "description": "Determines whether to disable URL suggestions for the current revision (commit SHA)"
         }
-    },
-    "scripts": {
-        "vscode:prepublish": "./node_modules/.bin/tsc -p ./",
-        "compile": "tsc -watch -p ./",
-        "build": "tsc -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install"
-    },
-    "devDependencies": {
-        "@types/mocha": "^5.2.5",
-        "@types/node": "^10.12.3",
-        "@types/ramda": "^0.25.41",
-        "typescript": "^3.1.6",
-        "vscode": "^1.1.36"
-    },
-    "config": {
-        "commitizen": {
-            "path": "cz-conventional-changelog"
-        }
-    },
-    "dependencies": {
-        "opn": "^5.4.0",
-        "ramda": "^0.25.0"
+      }
     }
+  },
+  "scripts": {
+    "vscode:prepublish": "./node_modules/.bin/tsc -p ./",
+    "compile": "tsc -watch -p ./",
+    "build": "tsc -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install"
+  },
+  "devDependencies": {
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^10.12.3",
+    "@types/ramda": "^0.25.41",
+    "typescript": "^3.1.6",
+    "vscode": "^1.1.36"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
+  "dependencies": {
+    "opn": "^5.4.0",
+    "ramda": "^0.25.0"
+  }
 }

@@ -98,7 +98,7 @@ export function getRemotes(exec, projectPath: string, defaultRemote: string, def
     return getRemoteByName(exec, projectPath, defaultRemote);
   }
 
-  return getAllRemotes(exec, projectPath);
+  return getAllRemotes(exec, projectPath, defaultRemote);
 }
 
 /**
@@ -111,13 +111,15 @@ export function getRemotes(exec, projectPath: string, defaultRemote: string, def
  *
  * @return {Promise<String[]>}
  */
-export function getAllRemotes(exec, projectPath: string): Promise<string[]> {
+export function getAllRemotes(exec, projectPath: string, defaultRemote: string): Promise<string[]> {
+  const sortRemoteByDefaultRemote = (defaultRemote: string) => defaultRemote ? R.sort((a, b) => a[0].startsWith(defaultRemote) ? -1 : b[0].startsWith(defaultRemote) ? 1 : 0) : R.identity;
   const process = R.compose(
     R.uniq,
     R.map(R.head),
     R.map(R.split(' ')),
     R.reject(R.isEmpty),
     R.map(R.last),
+    sortRemoteByDefaultRemote(defaultRemote),
     R.map(R.split(/\t/)),
     R.split('\n')
   );

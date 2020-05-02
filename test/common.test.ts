@@ -1,6 +1,5 @@
 import * as assert from 'assert';
 import * as common from '../src/common';
-import * as file from '../src/file';
 
 suite('#getRemotes', () => {
   const mockRemoteResult = `
@@ -19,6 +18,22 @@ upstream	https://github.yandex-team.ru/serp/web4 (push)
           [
             'git@github.yandex-team.ru:search-interfaces/web4.git',
             'https://github.yandex-team.ru/serp/web4'
+          ]
+        );
+        done();
+      })
+      .catch(done);
+  });
+
+  test('should account for defaultRemote', done => {
+    common
+      .getRemotes((cmd, opts, cb) => cb(null, mockRemoteResult, null), '', 'upstream', '', ['master'])
+      .then((list) => {
+        assert.deepEqual(
+          list,
+          [
+            'https://github.yandex-team.ru/serp/web4',
+            'git@github.yandex-team.ru:search-interfaces/web4.git'
           ]
         );
         done();

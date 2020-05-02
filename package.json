@@ -2,7 +2,7 @@
   "name": "vscode-open-in-github",
   "displayName": "Open In GitHub",
   "description": "Provides commands to quickly view the current file on GitHub.",
-  "version": "1.13.0",
+  "version": "1.13.1",
   "publisher": "sysoev",
   "engines": {
     "vscode": "^1.18.0"

@@ -1,23 +1,23 @@
-import { window, workspace, QuickPickItem } from 'vscode';
+import { window, workspace, QuickPickItem } from "vscode";
 
-const exec = require('child_process').exec;
-const path = require('path');
-const opn = require('opn');
-const R = require('ramda');
-const clipboardy = require('clipboardy');
+const exec = require("child_process").exec;
+const path = require("path");
+const opn = require("opn");
+const R = require("ramda");
+const clipboardy = require("clipboardy");
 
-export const BRANCH_URL_SEP = ' — ';
+export const BRANCH_URL_SEP = " — ";
 
 interface Formatters {
-  github: Function
-  bitbucket: Function
-  bitbucketServer: Function
-  gitlab: Function
+  github: Function;
+  bitbucket: Function;
+  bitbucketServer: Function;
+  gitlab: Function;
 }
 
 export interface SelectedLines {
-  start: number,
-  end?: number
+  start: number;
+  end?: number;
 }
 
 export type Action = (item?: QuickPickItem) => void;
@@ -27,11 +27,15 @@ export type Action = (item?: QuickPickItem) => void;
  *
  * @return {Promise}
  */
-export function baseCommand(commandName: string, action: Action, formatters: Formatters) {
+export function baseCommand(
+  commandName: string,
+  action: Action,
+  formatters: Formatters
+) {
   const activeTextEditor = window.activeTextEditor;
 
   if (!activeTextEditor) {
-    window.showErrorMessage('No opened files.');
+    window.showErrorMessage("No opened files.");
     return;
   }
 
@@ -40,30 +44,63 @@ export function baseCommand(commandName: string, action: Action, formatters: For
   const lineStart = window.activeTextEditor.selection.start.line + 1;
   const lineEnd = window.activeTextEditor.selection.end.line + 1;
   const selectedLines = { start: lineStart, end: lineEnd };
-  const config = workspace.getConfiguration('openInGitHub', window.activeTextEditor.document.uri);
-  const defaultBranch = workspace.getConfiguration('openInGitHub', fileUri).get<string>('defaultBranch') || 'master';
-  const defaultRemote = workspace.getConfiguration('openInGitHub', fileUri).get<string>('defaultRemote') || 'origin';
-  const maxBuffer = workspace.getConfiguration('openInGithub', fileUri).get<number>('maxBuffer') || undefined;
-  const excludeCurrentRevision = workspace.getConfiguration('openInGitHub').get<boolean>('excludeCurrentRevision') || false;
-  const repositoryType = config.get<string>('repositoryType');
+  const config = workspace.getConfiguration(
+    "openInGitHub",
+    window.activeTextEditor.document.uri
+  );
+  const defaultBranch =
+    workspace
+      .getConfiguration("openInGitHub", fileUri)
+      .get<string>("defaultBranch") || "master";
+  const defaultRemote =
+    workspace
+      .getConfiguration("openInGitHub", fileUri)
+      .get<string>("defaultRemote") || "origin";
+  const maxBuffer =
+    workspace
+      .getConfiguration("openInGithub", fileUri)
+      .get<number>("maxBuffer") || undefined;
+  const excludeCurrentRevision =
+    workspace
+      .getConfiguration("openInGitHub")
+      .get<boolean>("excludeCurrentRevision") || false;
+  const repositoryType = config.get<string>("repositoryType");
   const projectPath = path.dirname(filePath);
 
-  return getRepoRoot(exec, projectPath)
-    .then(repoRootPath => {
-      const relativeFilePath = path.relative(repoRootPath, filePath);
+  return getRepoRoot(exec, projectPath).then(repoRootPath => {
+    const relativeFilePath = path.relative(repoRootPath, filePath);
 
-      return getBranches(exec, projectPath, defaultBranch, maxBuffer, excludeCurrentRevision)
-        .then(branches => {
-          const getRemotesPromise =
-            getRemotes(exec, projectPath, defaultRemote, defaultBranch, branches).then(formatRemotes);
-          return Promise.all([getRemotesPromise, branches])
-        })
-        .then(result => prepareQuickPickItems(repositoryType, formatters, commandName, relativeFilePath, selectedLines, result))
-        .then(showQuickPickWindow)
-        .then(item => action(item))
-        .catch(err => window.showErrorMessage(err));
-    });
-
+    return getBranches(
+      exec,
+      projectPath,
+      defaultBranch,
+      maxBuffer,
+      excludeCurrentRevision
+    )
+      .then(branches => {
+        const getRemotesPromise = getRemotes(
+          exec,
+          projectPath,
+          defaultRemote,
+          defaultBranch,
+          branches
+        ).then(formatRemotes);
+        return Promise.all([getRemotesPromise, branches]);
+      })
+      .then(result =>
+        prepareQuickPickItems(
+          repositoryType,
+          formatters,
+          commandName,
+          relativeFilePath,
+          selectedLines,
+          result
+        )
+      )
+      .then(showQuickPickWindow)
+      .then(item => action(item))
+      .catch(err => window.showErrorMessage(err));
+  });
 }
 
 /**
@@ -76,10 +113,14 @@ export function baseCommand(commandName: string, action: Action, formatters: For
  */
 export function getRepoRoot(exec, workspacePath: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    exec('git rev-parse --show-toplevel', { cwd: workspacePath }, (error, stdout, stderr) => {
-      if (stderr || error) return reject(stderr || error);
-      resolve(stdout.trim());
-    });
+    exec(
+      "git rev-parse --show-toplevel",
+      { cwd: workspacePath },
+      (error, stdout, stderr) => {
+        if (stderr || error) return reject(stderr || error);
+        resolve(stdout.trim());
+      }
+    );
   });
 }
 
@@ -94,7 +135,13 @@ export function getRepoRoot(exec, workspacePath: string): Promise<string> {
  *
  * @return {Promise<String[]>}
  */
-export function getRemotes(exec, projectPath: string, defaultRemote: string, defaultBranch: string, branches: string[]) {
+export function getRemotes(
+  exec,
+  projectPath: string,
+  defaultRemote: string,
+  defaultBranch: string,
+  branches: string[]
+) {
   /**
    * If there is only default branch that was pushed to remote then return only default remote.
    */
@@ -115,21 +162,34 @@ export function getRemotes(exec, projectPath: string, defaultRemote: string, def
  *
  * @return {Promise<String[]>}
  */
-export function getAllRemotes(exec, projectPath: string, defaultRemote: string): Promise<string[]> {
-  const sortRemoteByDefaultRemote = (defaultRemote: string) => defaultRemote ? R.sort((a, b) => a[0].startsWith(defaultRemote) ? -1 : b[0].startsWith(defaultRemote) ? 1 : 0) : R.identity;
+export function getAllRemotes(
+  exec,
+  projectPath: string,
+  defaultRemote: string
+): Promise<string[]> {
+  const sortRemoteByDefaultRemote = (defaultRemote: string) =>
+    defaultRemote
+      ? R.sort((a, b) =>
+          a[0].startsWith(defaultRemote)
+            ? -1
+            : b[0].startsWith(defaultRemote)
+            ? 1
+            : 0
+        )
+      : R.identity;
   const process = R.compose(
     R.uniq,
     R.map(R.head),
-    R.map(R.split(' ')),
+    R.map(R.split(" ")),
     R.reject(R.isEmpty),
     R.map(R.last),
     sortRemoteByDefaultRemote(defaultRemote),
     R.map(R.split(/\t/)),
-    R.split('\n')
+    R.split("\n")
   );
 
   return new Promise((resolve, reject) => {
-    exec('git remote -v', { cwd: projectPath }, (error, stdout, stderr) => {
+    exec("git remote -v", { cwd: projectPath }, (error, stdout, stderr) => {
       if (stderr || error) return reject(stderr || error);
       resolve(process(stdout));
     });
@@ -145,12 +205,20 @@ export function getAllRemotes(exec, projectPath: string, defaultRemote: string):
  *
  * @return {Promise<String[]>}
  */
-export function getRemoteByName(exec, projectPath: string, remoteName: string): Promise<string[]> {
+export function getRemoteByName(
+  exec,
+  projectPath: string,
+  remoteName: string
+): Promise<string[]> {
   return new Promise((resolve, reject) => {
-    exec(`git config --get remote.${remoteName}.url`, { cwd: projectPath }, (error, stdout, stderr) => {
-      if (stderr || error) return reject(stderr || error);
-      resolve([stdout]);
-    });
+    exec(
+      `git config --get remote.${remoteName}.url`,
+      { cwd: projectPath },
+      (error, stdout, stderr) => {
+        if (stderr || error) return reject(stderr || error);
+        resolve([stdout]);
+      }
+    );
   });
 }
 
@@ -164,31 +232,32 @@ export function getRemoteByName(exec, projectPath: string, remoteName: string): 
 export function formatRemotes(remotes: string[]): string[] {
   const process = R.compose(
     R.uniq,
-    R.map(R.replace(/\/$/, '')),
+    R.map(R.replace(/\/$/, "")),
     R.reject(R.isEmpty),
-    R.map(R.replace(/\n/, '')),
+    R.map(R.replace(/\n/, "")),
     R.map(R.trim),
-    R.map(rem => rem.replace(/\/\/(.+)@github/, '//github')),
+    R.map(rem => rem.replace(/\/\/(.+)@github/, "//github")),
     R.map(rem =>
-      rem.match(/github\.com/)
-        ? rem.replace(/\.git(\b|$)/, '')
-        : rem),
+      rem.match(/github\.com/) ? rem.replace(/\.git(\b|$)/, "") : rem
+    ),
     R.reject(R.isNil),
     R.map(rem => {
       if (rem.match(/^https?:/)) {
-        return rem.replace(/\.git(\b|$)/, '');
+        return rem.replace(/\.git(\b|$)/, "");
       } else if (rem.match(/@/)) {
-        return 'https://' +
+        return (
+          "https://" +
           rem
-            .replace(/^.+@/, '')
-            .replace(/\.git(\b|$)/, '')
-            .replace(/:/g, '/');
+            .replace(/^.+@/, "")
+            .replace(/\.git(\b|$)/, "")
+            .replace(/:/g, "/")
+        );
       } else if (rem.match(/^ftps?:/)) {
-        return rem.replace(/^ftp/, 'http');
+        return rem.replace(/^ftp/, "http");
       } else if (rem.match(/^ssh:/)) {
-        return rem.replace(/^ssh/, 'https');
+        return rem.replace(/^ssh/, "https");
       } else if (rem.match(/^git:/)) {
-        return rem.replace(/^git/, 'https');
+        return rem.replace(/^git/, "https");
       }
     })
   );
@@ -207,19 +276,25 @@ export function formatRemotes(remotes: string[]): string[] {
  *
  * @return {Promise<String>}
  */
-export function getBranches(exec, projectPath: string, defaultBranch: string, maxBuffer?: number, excludeCurrentRevision?: boolean): Promise<string[]> {
+export function getBranches(
+  exec,
+  projectPath: string,
+  defaultBranch: string,
+  maxBuffer?: number,
+  excludeCurrentRevision?: boolean
+): Promise<string[]> {
   return new Promise((resolve, reject) => {
     const options: any = { cwd: projectPath };
     if (maxBuffer) options.maxBuffer = maxBuffer;
 
-    exec('git branch --no-color -a', options, (error, stdout, stderr) => {
+    exec("git branch --no-color -a", options, (error, stdout, stderr) => {
       if (stderr || error) return reject(stderr || error);
 
       const getCurrentBranch = R.compose(
         R.trim,
-        R.replace('*', ''),
-        R.find(line => line.startsWith('*')),
-        R.split('\n')
+        R.replace("*", ""),
+        R.find(line => line.startsWith("*")),
+        R.split("\n")
       );
 
       const processBranches = R.compose(
@@ -232,8 +307,7 @@ export function getBranches(exec, projectPath: string, defaultBranch: string, ma
 
       return excludeCurrentRevision
         ? resolve(branches)
-        : getCurrentRevision(exec, projectPath)
-          .then((currentRevision) => {
+        : getCurrentRevision(exec, projectPath).then(currentRevision => {
             return resolve(branches.concat(currentRevision));
           });
     });
@@ -251,17 +325,36 @@ export function getBranches(exec, projectPath: string, defaultBranch: string, ma
  */
 export function getCurrentRevision(exec, projectPath: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    exec('git rev-parse HEAD', { cwd: projectPath }, (error, stdout, stderr) => {
-      if (stderr || error) return reject(stderr || error);
-      resolve(stdout.trim());
-    });
+    exec(
+      "git rev-parse HEAD",
+      { cwd: projectPath },
+      (error, stdout, stderr) => {
+        if (stderr || error) return reject(stderr || error);
+        resolve(stdout.trim());
+      }
+    );
   });
 }
 
-export function formatQuickPickItems(repositoryType: string, formatters: Formatters, commandName: string, relativeFilePath: string, lines: SelectedLines, remotes: string[], branch: string): QuickPickItem[] {
+export function formatQuickPickItems(
+  repositoryType: string,
+  formatters: Formatters,
+  commandName: string,
+  relativeFilePath: string,
+  lines: SelectedLines,
+  remotes: string[],
+  branch: string
+): QuickPickItem[] {
   return remotes
-    .map(remote => (
-      { remote, url: chooseFormatter(formatters, repositoryType, remote)(remote, branch, relativeFilePath, lines) }))
+    .map(remote => ({
+      remote,
+      url: chooseFormatter(formatters, repositoryType, remote)(
+        remote,
+        branch,
+        relativeFilePath,
+        lines
+      )
+    }))
     .map(remote => ({
       label: relativeFilePath,
       detail: `${branch} | ${remote.remote}`,
@@ -278,45 +371,80 @@ export function formatQuickPickItems(repositoryType: string, formatters: Formatt
  *
  * @return {String[]}
  */
-export function prepareQuickPickItems(repositoryType: string, formatters: Formatters, commandName: string, relativeFilePath: string, lines: SelectedLines, [remotes, branches]: string[][]): QuickPickItem[] {
+export function prepareQuickPickItems(
+  repositoryType: string,
+  formatters: Formatters,
+  commandName: string,
+  relativeFilePath: string,
+  lines: SelectedLines,
+  [remotes, branches]: string[][]
+): QuickPickItem[] {
   if (!branches.length) {
     return [];
   }
 
   if (branches.length === 1) {
-    return formatQuickPickItems(repositoryType, formatters, commandName, relativeFilePath, lines, remotes, branches[0]);
+    return formatQuickPickItems(
+      repositoryType,
+      formatters,
+      commandName,
+      relativeFilePath,
+      lines,
+      remotes,
+      branches[0]
+    );
   }
 
   const processBranches = R.compose(
     R.flatten,
     // Join: [1,2,3], [4,5,6], [7,8,9] -> [1,4,7], [2,5,8], [3,6,9]
-    (results) => R.map((i) => R.map((item) => item[i], results), R.range(0, results[0].length)),
-    R.map(branch => formatQuickPickItems(repositoryType, formatters, commandName, relativeFilePath, lines, remotes, branch))
+    results =>
+      R.map(
+        i => R.map(item => item[i], results),
+        R.range(0, results[0].length)
+      ),
+    R.map(branch =>
+      formatQuickPickItems(
+        repositoryType,
+        formatters,
+        commandName,
+        relativeFilePath,
+        lines,
+        remotes,
+        branch
+      )
+    )
   );
   return processBranches(branches);
 }
 
 export function formatGithubBranchName(branch) {
-  return branch.split('/').map(c => encodeURIComponent(c)).join('/');
+  return branch
+    .split("/")
+    .map(c => encodeURIComponent(c))
+    .join("/");
 }
 
 /**
  * Returns true if remote is bitbucket.
  */
 export function isBitbucket(remote: string): boolean {
-  return !!remote.match('bitbucket.org');
+  return !!remote.match("bitbucket.org");
 }
 
 /**
  * Returns true if remote is gitlab.
  */
 export function isGitlab(remote: string): boolean {
-  return !!remote.match('gitlab.com');
+  return !!remote.match("gitlab.com");
 }
 
-export function formatBitbucketLinePointer(filePath: string, lines?: SelectedLines): string {
+export function formatBitbucketLinePointer(
+  filePath: string,
+  lines?: SelectedLines
+): string {
   if (!lines || !lines.start) {
-    return '';
+    return "";
   }
   const fileBasename = `#${path.basename(filePath)}`;
   let linePointer = `${fileBasename}-${lines.start}`;
@@ -327,7 +455,7 @@ export function formatBitbucketLinePointer(filePath: string, lines?: SelectedLin
 
 export function formatGitHubLinePointer(lines?: SelectedLines): string {
   if (!lines || !lines.start) {
-    return '';
+    return "";
   }
 
   let linePointer = `#L${lines.start}`;
@@ -338,7 +466,7 @@ export function formatGitHubLinePointer(lines?: SelectedLines): string {
 
 export function formatGitlabLinePointer(lines?: SelectedLines): string {
   if (!lines || !lines.start) {
-    return '';
+    return "";
   }
 
   let linePointer = `#L${lines.start}`;
@@ -385,22 +513,30 @@ export function copyQuickPickItem(item?: QuickPickItem) {
 /**
  * Chooses proper formatter based on repository type.
  */
-function chooseFormatter(formatters: Formatters, repositoryType: string, remote: string): Function {
+function chooseFormatter(
+  formatters: Formatters,
+  repositoryType: string,
+  remote: string
+): Function {
   switch (repositoryType) {
     case "auto": {
       if (isBitbucket(remote)) {
-        return formatters.bitbucket
+        return formatters.bitbucket;
       }
 
       if (isGitlab(remote)) {
-        return formatters.gitlab
+        return formatters.gitlab;
       }
 
-      return formatters.github
+      return formatters.github;
     }
-    case "github": return formatters.github;
-    case "bitbucket": return formatters.bitbucket;
-    case "bitbucket-server": return formatters.bitbucketServer;
-    case "gitlab": return formatters.gitlab;
+    case "github":
+      return formatters.github;
+    case "bitbucket":
+      return formatters.bitbucket;
+    case "bitbucket-server":
+      return formatters.bitbucketServer;
+    case "gitlab":
+      return formatters.gitlab;
   }
 }

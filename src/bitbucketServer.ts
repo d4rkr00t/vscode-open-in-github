@@ -1,10 +1,15 @@
-import { SelectedLines } from './common';
+import { SelectedLines } from "./common";
 
-export function formatBitbucketServerUrl(remote: string, branch: string, filePath: string, lines?: SelectedLines): string {
+export function formatBitbucketServerUrl(
+  remote: string,
+  branch: string,
+  filePath: string,
+  lines?: SelectedLines
+): string {
   const re = /(https\:\/\/[^\/]+)\/([^\/]+)\/([^\/]+)/;
   const matches = remote.match(re);
   if (matches.length != 4) {
-    return '';
+    return "";
   }
 
   const host = matches[1];
@@ -18,7 +23,7 @@ export function formatBitbucketServerUrl(remote: string, branch: string, filePat
 
 function formatBitbucketServerLinePointer(lines?: SelectedLines): string {
   if (!lines || !lines.start) {
-    return '';
+    return "";
   }
   let linePointer = `#${lines.start}`;
   if (lines.end && lines.end != lines.start) linePointer += `-${lines.end}`;

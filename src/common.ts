@@ -4,6 +4,7 @@ const exec = require('child_process').exec;
 const path = require('path');
 const opn = require('opn');
 const R = require('ramda');
+const clipboardy = require('clipboardy');
 
 export const BRANCH_URL_SEP = ' — ';
 
@@ -19,12 +20,14 @@ export interface SelectedLines {
   end?: number
 }
 
+export type Action = (item?: QuickPickItem) => void;
+
 /**
  * Makes initial preparations for all commands.
  *
  * @return {Promise}
  */
-export function baseCommand(commandName: string, formatters: Formatters) {
+export function baseCommand(commandName: string, action: Action, formatters: Formatters) {
   const activeTextEditor = window.activeTextEditor;
 
   if (!activeTextEditor) {
@@ -57,6 +60,7 @@ export function baseCommand(commandName: string, formatters: Formatters) {
         })
         .then(result => prepareQuickPickItems(repositoryType, formatters, commandName, relativeFilePath, selectedLines, result))
         .then(showQuickPickWindow)
+        .then(item => action(item))
         .catch(err => window.showErrorMessage(err));
     });
 
@@ -350,25 +354,32 @@ export function formatGitlabLinePointer(lines?: SelectedLines): string {
  */
 export function showQuickPickWindow(quickPickList: QuickPickItem[]) {
   if (quickPickList.length === 1) {
-    openQuickPickItem(quickPickList[0]);
-    return;
+    return Promise.resolve(quickPickList[0]);
   }
 
-  window
-    .showQuickPick(quickPickList)
-    .then(selected => openQuickPickItem(selected));
+  return window.showQuickPick(quickPickList);
 }
 
 /**
  * Opens given quick pick item in browser.
- *
- * @todo: Should work on windows too...
  *
  * @param {String} item
  */
 export function openQuickPickItem(item?: QuickPickItem) {
   if (!item) return;
   opn((item as any).url);
+}
+
+/**
+ * Copies given quick pick item to the clipboard.
+ *
+ * @param {String} item
+ */
+export function copyQuickPickItem(item?: QuickPickItem) {
+  if (!item) return;
+  const url = (item as any).url;
+  clipboardy.writeSync(url);
+  window.showInformationMessage("Copied to the clipboard: " + url);
 }
 
 /**

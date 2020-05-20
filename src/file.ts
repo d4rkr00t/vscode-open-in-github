@@ -1,9 +1,8 @@
-import { window, workspace } from 'vscode';
-import { baseCommand, formatBitbucketLinePointer, formatGitHubLinePointer, formatGithubBranchName, SelectedLines, formatGitlabLinePointer } from './common';
+import { baseCommand, formatBitbucketLinePointer, formatGitHubLinePointer, formatGithubBranchName, SelectedLines, formatGitlabLinePointer, Action } from './common';
 import { formatBitbucketServerUrl } from './bitbucketServer';
 
-export default function fileCommand() {
-  baseCommand('file', {
+export default function fileCommand(action: Action) {
+  return () => baseCommand('file', action, {
     github: formatGitHubFileUrl,
     bitbucket: formatBitbucketFileUrl,
     bitbucketServer: formatBitbucketServerUrl,

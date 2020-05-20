@@ -28,7 +28,10 @@
   "activationEvents": [
     "onCommand:openInGithub.openInGitHubFile",
     "onCommand:openInGithub.openInGitHubBlame",
-    "onCommand:openInGithub.openInGitHubHistory"
+    "onCommand:openInGithub.openInGitHubHistory",
+    "onCommand:openInGithub.copyInGitHubFile",
+    "onCommand:openInGithub.copyInGitHubBlame",
+    "onCommand:openInGithub.copyInGitHubHistory"
   ],
   "contributes": {
     "commands": [
@@ -43,6 +46,18 @@
       {
         "command": "openInGithub.openInGitHubHistory",
         "title": "Open In GitHub: History"
+      },
+      {
+        "command": "openInGithub.copyInGitHubFile",
+        "title": "Copy GitHub URL: File"
+      },
+      {
+        "command": "openInGithub.copyInGitHubBlame",
+        "title": "Copy GitHub URL: Blame"
+      },
+      {
+        "command": "openInGithub.copyInGitHubHistory",
+        "title": "Copy GitHub URL: History"
       }
     ],
     "configuration": {
@@ -107,7 +122,7 @@
     "@types/node": "^10.12.3",
     "@types/ramda": "^0.25.41",
     "typescript": "^3.1.6",
-    "vscode": "^1.1.36"
+    "vscode": "^1.1.37"
   },
   "config": {
     "commitizen": {
@@ -116,6 +131,7 @@
   },
   "dependencies": {
     "opn": "^5.4.0",
-    "ramda": "^0.25.0"
+    "ramda": "^0.25.0",
+    "clipboardy": "^2.3.0"
   }
 }

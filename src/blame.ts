@@ -1,9 +1,9 @@
 import { window, workspace } from 'vscode';
-import { baseCommand, formatBitbucketLinePointer, formatGitHubLinePointer, formatGithubBranchName, SelectedLines, formatGitlabLinePointer } from './common';
+import { baseCommand, formatBitbucketLinePointer, formatGitHubLinePointer, formatGithubBranchName, SelectedLines, formatGitlabLinePointer, Action } from './common';
 import { formatBitbucketServerUrl } from './bitbucketServer';
 
-export default function blameCommand() {
-  baseCommand('blame', {
+export default function blameCommand(action: Action) {
+  return () => baseCommand('blame', action, {
     github: formatGitHubBlameUrl,
     bitbucket: formatBitbucketBlameUrl,
     bitbucketServer: formatBitbucketServerUrl,

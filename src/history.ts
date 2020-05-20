@@ -1,9 +1,9 @@
 import { window, workspace } from 'vscode';
-import { baseCommand, formatGithubBranchName, SelectedLines } from './common';
+import { baseCommand, formatGithubBranchName, SelectedLines, Action } from './common';
 import { formatBitbucketServerUrl } from './bitbucketServer';
 
-export default function historyCommand() {
-  baseCommand('history', {
+export default function historyCommand(action: Action) {
+  return () => baseCommand('history', action, {
     github: formatGitHubHistoryUrl,
     bitbucket: formatBitbucketHistoryUrl,
     bitbucketServer: formatBitbucketServerUrl,

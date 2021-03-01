@@ -2,7 +2,7 @@ import { window, workspace, QuickPickItem } from "vscode";
 
 const exec = require("child_process").exec;
 const path = require("path");
-const opn = require("opn");
+const open = require("open");
 const R = require("ramda");
 const clipboardy = require("clipboardy");
 
@@ -495,7 +495,7 @@ export function showQuickPickWindow(quickPickList: QuickPickItem[]) {
  */
 export function openQuickPickItem(item?: QuickPickItem) {
   if (!item) return;
-  opn((item as any).url);
+  open((item as any).url);
 }
 
 /**

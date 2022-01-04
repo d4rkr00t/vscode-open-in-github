@@ -2,7 +2,8 @@
   "name": "vscode-open-in-github",
   "displayName": "Open In GitHub",
   "description": "Provides commands to quickly view the current file on GitHub.",
-  "version": "1.16.0",
+  "license": "MIT",
+  "version": "1.15.0",
   "publisher": "sysoev",
   "engines": {
     "vscode": "^1.60.0"

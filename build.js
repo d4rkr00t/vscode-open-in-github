@@ -5,13 +5,13 @@ require("esbuild")
   .build({
     entryPoints: ["./src/extension.ts"],
     bundle: true,
-    outdir: "out",
+    outdir: "./out",
     external: ["vscode"],
     format: "cjs",
     sourcemap: !production,
     minify: production,
     platform: "node",
-    target: ["node12"],
+    target: ["node16"],
     watch: watch && {
       onRebuild(error) {
         if (error) console.error("watch build failed:", error);

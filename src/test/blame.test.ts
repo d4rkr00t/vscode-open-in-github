@@ -1,5 +1,5 @@
 import * as assert from "assert";
-import * as blame from "../src/blame";
+import * as blame from "../blame";
 
 suite("blameCommand # formatGitHubBlameUrl", () => {
   test("should format strings for quick pick view", () => {

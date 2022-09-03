@@ -1,5 +1,5 @@
 import * as assert from "assert";
-import * as history from "../src/history";
+import * as history from "../history";
 
 suite("historyCommand # formatGitHubHistoryUrl", () => {
   test("should format strings for quick pick view", () => {

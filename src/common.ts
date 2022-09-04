@@ -67,7 +67,7 @@ export function baseCommand(
   const repositoryType = config.get<string>("repositoryType");
   const projectPath = path.dirname(filePath);
 
-  return getRepoRoot(exec, projectPath).then(repoRootPath => {
+  return getRepoRoot(exec, projectPath).then((repoRootPath) => {
     const relativeFilePath = path.relative(repoRootPath, filePath);
 
     return getBranches(
@@ -77,7 +77,7 @@ export function baseCommand(
       maxBuffer,
       excludeCurrentRevision
     )
-      .then(branches => {
+      .then((branches) => {
         const getRemotesPromise = getRemotes(
           exec,
           projectPath,
@@ -87,7 +87,7 @@ export function baseCommand(
         ).then(formatRemotes);
         return Promise.all([getRemotesPromise, branches]);
       })
-      .then(result =>
+      .then((result) =>
         prepareQuickPickItems(
           repositoryType,
           formatters,
@@ -98,8 +98,8 @@ export function baseCommand(
         )
       )
       .then(showQuickPickWindow)
-      .then(item => action(item))
-      .catch(err => window.showErrorMessage(err));
+      .then((item) => action(item))
+      .catch((err) => window.showErrorMessage(err));
   });
 }
 
@@ -236,12 +236,12 @@ export function formatRemotes(remotes: string[]): string[] {
     R.reject(R.isEmpty),
     R.map(R.replace(/\n/, "")),
     R.map(R.trim),
-    R.map(rem => rem.replace(/\/\/(.+)@github/, "//github")),
-    R.map(rem =>
+    R.map((rem) => rem.replace(/\/\/(.+)@github/, "//github")),
+    R.map((rem) =>
       rem.match(/github\.com/) ? rem.replace(/\.git(\b|$)/, "") : rem
     ),
     R.reject(R.isNil),
-    R.map(rem => {
+    R.map((rem) => {
       if (rem.match(/^https?:/)) {
         return rem.replace(/\.git(\b|$)/, "");
       } else if (rem.match(/@/)) {
@@ -293,12 +293,12 @@ export function getBranches(
       const getCurrentBranch = R.compose(
         R.trim,
         R.replace("*", ""),
-        R.find(line => line.startsWith("*")),
+        R.find((line) => line.startsWith("*")),
         R.split("\n")
       );
 
       const processBranches = R.compose(
-        R.filter(br => stdout.match(new RegExp(`remotes\/.*\/${br}`))),
+        R.filter((br) => stdout.match(new RegExp(`remotes\/.*\/${br}`))),
         R.uniq
       );
 
@@ -307,7 +307,7 @@ export function getBranches(
 
       return excludeCurrentRevision
         ? resolve(branches)
-        : getCurrentRevision(exec, projectPath).then(currentRevision => {
+        : getCurrentRevision(exec, projectPath).then((currentRevision) => {
             return resolve(branches.concat(currentRevision));
           });
     });
@@ -346,20 +346,20 @@ export function formatQuickPickItems(
   branch: string
 ): QuickPickItem[] {
   return remotes
-    .map(remote => ({
+    .map((remote) => ({
       remote,
       url: chooseFormatter(formatters, repositoryType, remote)(
         remote,
         branch,
         relativeFilePath,
         lines
-      )
+      ),
     }))
-    .map(remote => ({
+    .map((remote) => ({
       label: relativeFilePath,
       detail: `${branch} | ${remote.remote}`,
       description: `[${commandName}]`,
-      url: remote.url
+      url: remote.url,
     }));
 }
 
@@ -398,12 +398,12 @@ export function prepareQuickPickItems(
   const processBranches = R.compose(
     R.flatten,
     // Join: [1,2,3], [4,5,6], [7,8,9] -> [1,4,7], [2,5,8], [3,6,9]
-    results =>
+    (results) =>
       R.map(
-        i => R.map(item => item[i], results),
+        (i) => R.map((item) => item[i], results),
         R.range(0, results[0].length)
       ),
-    R.map(branch =>
+    R.map((branch) =>
       formatQuickPickItems(
         repositoryType,
         formatters,
@@ -421,7 +421,7 @@ export function prepareQuickPickItems(
 export function formatGithubBranchName(branch) {
   return branch
     .split("/")
-    .map(c => encodeURIComponent(c))
+    .map((c) => encodeURIComponent(c))
     .join("/");
 }
 
@@ -462,6 +462,14 @@ export function formatGitHubLinePointer(lines?: SelectedLines): string {
   if (lines.end && lines.end != lines.start) linePointer += `-L${lines.end}`;
 
   return linePointer;
+}
+
+export function formatGitHubQueryParams(filePath: string): string {
+  if (filePath.endsWith(".md")) {
+    return "?plain=1";
+  }
+
+  return "";
 }
 
 export function formatGitlabLinePointer(lines?: SelectedLines): string {

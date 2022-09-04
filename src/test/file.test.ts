@@ -14,6 +14,7 @@ suite("fileCommand # formatGitHubFileUrl", () => {
       "https://remote.url/blob/master/rel/path/to/file.js#L10"
     );
   });
+
   test("should format strings for quick pick view", () => {
     const results = file.formatGitHubFileUrl(
       "https://remote.url",
@@ -26,6 +27,7 @@ suite("fileCommand # formatGitHubFileUrl", () => {
       "https://remote.url/blob/master/rel/path/to/file.js#L10-L20"
     );
   });
+
   test("should format strings for quick pick view", () => {
     const results = file.formatGitHubFileUrl(
       "https://remote.url",
@@ -38,6 +40,7 @@ suite("fileCommand # formatGitHubFileUrl", () => {
       "https://remote.url/blob/master/rel/path/to/file.js#L10"
     );
   });
+
   test("should format strings for quick pick view", () => {
     const results = file.formatGitHubFileUrl(
       "https://remote.url",
@@ -46,6 +49,7 @@ suite("fileCommand # formatGitHubFileUrl", () => {
     );
     assert.equal(results, "https://remote.url/blob/master/rel/path/to/file.js");
   });
+
   test("should format strings for quick pick view", () => {
     const results = file.formatGitHubFileUrl(
       "https://remote.url",
@@ -55,6 +59,19 @@ suite("fileCommand # formatGitHubFileUrl", () => {
     assert.equal(
       results,
       "https://remote.url/blob/feature/%23foo/rel/path/to/file.js"
+    );
+  });
+
+  test("should add ?plain=1 for markdown links", () => {
+    const results = file.formatGitHubFileUrl(
+      "https://remote.url",
+      "master",
+      "rel/path/to/file.md",
+      { start: 10 }
+    );
+    assert.equal(
+      results,
+      "https://remote.url/blob/master/rel/path/to/file.md?plain=1#L10"
     );
   });
 });

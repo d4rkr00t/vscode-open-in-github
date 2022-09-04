@@ -3,9 +3,10 @@ import {
   formatBitbucketLinePointer,
   formatGitHubLinePointer,
   formatGithubBranchName,
+  formatGitHubQueryParams,
   SelectedLines,
   formatGitlabLinePointer,
-  Action
+  Action,
 } from "./common";
 import { formatBitbucketServerUrl } from "./bitbucketServer";
 
@@ -15,7 +16,7 @@ export default function fileCommand(action: Action) {
       github: formatGitHubFileUrl,
       bitbucket: formatBitbucketFileUrl,
       bitbucketServer: formatBitbucketServerUrl,
-      gitlab: formatGitlabFileUrl
+      gitlab: formatGitlabFileUrl,
     });
 }
 
@@ -27,7 +28,9 @@ export function formatGitHubFileUrl(
 ): string {
   return `${remote}/blob/${formatGithubBranchName(
     branch
-  )}/${filePath}${formatGitHubLinePointer(lines)}`;
+  )}/${filePath}${formatGitHubQueryParams(filePath)}${formatGitHubLinePointer(
+    lines
+  )}`;
 }
 
 export function formatBitbucketFileUrl(

@@ -155,7 +155,7 @@
     }
   },
   "dependencies": {
-    "open": "^7.4.2",
+    "opn": "5.4.0",
     "ramda": "^0.25.0",
     "clipboardy": "^2.3.0"
   }

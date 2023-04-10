@@ -155,8 +155,8 @@
     }
   },
   "dependencies": {
-    "opn": "5.4.0",
-    "ramda": "^0.25.0",
-    "clipboardy": "^2.3.0"
+    "clipboardy": "^2.3.0",
+    "open": "^8.4.2",
+    "ramda": "^0.25.0"
   }
 }

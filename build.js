@@ -6,7 +6,7 @@ require("esbuild")
     entryPoints: ["./src/extension.ts"],
     bundle: true,
     outdir: "./out",
-    external: ["vscode"],
+    external: ["vscode", "open"],
     format: "cjs",
     sourcemap: !production,
     minify: production,
@@ -16,10 +16,10 @@ require("esbuild")
       onRebuild(error) {
         if (error) console.error("watch build failed:", error);
         else console.log("watch build succeeded");
-      }
-    }
+      },
+    },
   })
-  .catch(e => {
+  .catch((e) => {
     console.error(e);
     process.exit(1);
   });

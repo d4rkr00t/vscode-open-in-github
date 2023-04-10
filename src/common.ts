@@ -87,20 +87,34 @@ export function baseCommand(
         ).then(formatRemotes);
         return Promise.all([getRemotesPromise, branches]);
       })
-      .then((result) =>
-        prepareQuickPickItems(
+      .then((result) => {
+        return prepareQuickPickItems(
           repositoryType,
           formatters,
           commandName,
           relativeFilePath,
           selectedLines,
           result
-        )
-      )
+        );
+      })
       .then(showQuickPickWindow)
-      .then((item) => action(item))
-      .catch((err) => window.showErrorMessage(err));
+      .then(action)
+      .catch(displayErrorMessage);
   });
+}
+
+function displayErrorMessage(err: string | (Error & { code?: string })) {
+  if (typeof err === "string") {
+    return window.showErrorMessage(err);
+  }
+
+  if (err?.code === "ERR_CHILD_PROCESS_STDIO_MAXBUFFER") {
+    return window.showErrorMessage(
+      'Child process stdio maxbuffer error, increase the maxBuffer size in setting, e.g.:\n\n "openInGithub.maxBuffer": 512000'
+    );
+  }
+
+  return window.showErrorMessage(err.message ?? err.code);
 }
 
 /**

@@ -1,9 +1,10 @@
-import { SelectedLines } from "./common";
+import { RemoteURLMappings, SelectedLines } from "./common";
 
 export function formatBitbucketServerUrl(
   remote: string,
   branch: string,
   filePath: string,
+  remoteURLMappings: RemoteURLMappings = {},
   lines?: SelectedLines
 ): string {
   const re = /(https\:\/\/[^\/]+)\/([^\/]+)\/([^\/]+)/;
@@ -12,11 +13,15 @@ export function formatBitbucketServerUrl(
     return "";
   }
 
-  const host = matches[1];
+  const derivedHost = matches[1];
   const project = matches[2];
   const repo = matches[3];
   const branchRef = encodeURIComponent(`refs/heads/${branch}`);
   const linePointer = formatBitbucketServerLinePointer(lines);
+  const host =
+    derivedHost in remoteURLMappings
+      ? remoteURLMappings[derivedHost]
+      : derivedHost;
 
   return `${host}/projects/${project}/repos/${repo}/browse/${filePath}?at=${branchRef}${linePointer}`;
 }

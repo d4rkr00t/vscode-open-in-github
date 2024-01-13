@@ -1,4 +1,3 @@
-import { window, workspace } from "vscode";
 import {
   baseCommand,
   formatBitbucketLinePointer,
@@ -6,7 +5,8 @@ import {
   formatGithubBranchName,
   SelectedLines,
   formatGitlabLinePointer,
-  Action
+  Action,
+  RemoteURLMappings,
 } from "./common";
 import { formatBitbucketServerUrl } from "./bitbucketServer";
 
@@ -16,27 +16,37 @@ export default function blameCommand(action: Action) {
       github: formatGitHubBlameUrl,
       bitbucket: formatBitbucketBlameUrl,
       bitbucketServer: formatBitbucketServerUrl,
-      gitlab: formatGitlabBlameUrl
+      gitlab: formatGitlabBlameUrl,
     });
 }
 
 export function formatGitHubBlameUrl(
-  remote: string,
+  derivedRemote: string,
   branch: string,
   filePath: string,
+  remoteURLMappings: RemoteURLMappings = {},
   lines?: SelectedLines
 ): string {
+  const remote =
+    derivedRemote in remoteURLMappings
+      ? remoteURLMappings[derivedRemote]
+      : derivedRemote;
   return `${remote}/blame/${formatGithubBranchName(
     branch
   )}/${filePath}${formatGitHubLinePointer(lines)}`;
 }
 
 export function formatBitbucketBlameUrl(
-  remote: string,
+  derivedRemote: string,
   branch: string,
   filePath: string,
+  remoteURLMappings: RemoteURLMappings = {},
   lines?: SelectedLines
 ): string {
+  const remote =
+    derivedRemote in remoteURLMappings
+      ? remoteURLMappings[derivedRemote]
+      : derivedRemote;
   return `${remote}/annotate/${branch}/${filePath}${formatBitbucketLinePointer(
     filePath,
     lines
@@ -44,11 +54,16 @@ export function formatBitbucketBlameUrl(
 }
 
 export function formatGitlabBlameUrl(
-  remote: string,
+  derivedRemote: string,
   branch: string,
   filePath: string,
+  remoteURLMappings: RemoteURLMappings = {},
   lines?: SelectedLines
 ): string {
+  const remote =
+    derivedRemote in remoteURLMappings
+      ? remoteURLMappings[derivedRemote]
+      : derivedRemote;
   return `${remote}/blame/${formatGithubBranchName(
     branch
   )}/${filePath}${formatGitlabLinePointer(lines)}`;

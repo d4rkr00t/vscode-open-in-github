@@ -75,6 +75,7 @@ suite("#formatRemotes", () => {
     "http://host.xz/path/to/repo.git/",
     "ftp://host.xz/path/to/repo.git/",
     "https://user@github.com/some/repo.git",
+    "ssh://git@bitbucket-mirror-au.internal.atlassian.com:7999/confcloud/confluence-frontend.git",
     "../other",
   ];
 
@@ -95,6 +96,7 @@ suite("#formatRemotes", () => {
       "http://host.xz/path/to/repo",
       "http://host.xz/path/to/repo.git",
       "https://github.com/some/repo",
+      "https://bitbucket-mirror-au.internal.atlassian.com/confcloud/confluence-frontend",
       undefined,
     ]);
   });
@@ -194,6 +196,7 @@ suite("#prepareQuickPickItems", () => {
       const result = common.prepareQuickPickItems(
         "auto",
         formatters,
+        {},
         "test-command",
         "file.js",
         { start: 10 },
@@ -206,6 +209,7 @@ suite("#prepareQuickPickItems", () => {
       const result = common.prepareQuickPickItems(
         "auto",
         formatters,
+        {},
         "test-command",
         "file.js",
         { start: 10, end: 20 },
@@ -218,6 +222,7 @@ suite("#prepareQuickPickItems", () => {
       const result = common.prepareQuickPickItems(
         "auto",
         formatters,
+        {},
         "test-command",
         "file.js",
         { start: 10, end: 20 },
@@ -231,6 +236,7 @@ suite("#prepareQuickPickItems", () => {
     const result = common.prepareQuickPickItems(
       "auto",
       formatters,
+      {},
       "test-command",
       "file.js",
       { start: 10, end: 20 },

@@ -3,7 +3,7 @@
   "displayName": "Open In GitHub",
   "description": "Provides commands to quickly view the current file on GitHub.",
   "license": "MIT",
-  "version": "1.17.2",
+  "version": "1.18.0",
   "publisher": "sysoev",
   "engines": {
     "vscode": "^1.75.0"

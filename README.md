@@ -46,7 +46,14 @@ Add these lines to the workspace settings:
   "openInGitHub.defaultBranch": "master",
   "openInGitHub.defaultRemote": "origin",
   "openInGithub.maxBuffer": 512000,
+
+  // Determines whether to disable URL suggestions for the current revision (commit SHA)
   "openInGitHub.excludeCurrentRevision": false,
+
+  // Allows mapping from one remote to another when generating a URL
+  "openInGitHub.remoteURLMapping": {
+    "https://mirror.github.com": "https://github.com",
+  }
   ...
 }
 ```

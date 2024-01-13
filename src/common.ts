@@ -21,6 +21,7 @@ export interface SelectedLines {
 }
 
 export type Action = (item?: QuickPickItem) => void;
+export type RemoteURLMappings = Record<string, string>;
 
 /**
  * Makes initial preparations for all commands.
@@ -64,6 +65,10 @@ export function baseCommand(
     workspace
       .getConfiguration("openInGitHub")
       .get<boolean>("excludeCurrentRevision") || false;
+  const remoteURLMapping =
+    workspace
+      .getConfiguration("openInGitHub")
+      .get<RemoteURLMappings>("remoteURLMapping") || {};
   const repositoryType = config.get<string>("repositoryType");
   const projectPath = path.dirname(filePath);
 
@@ -91,6 +96,7 @@ export function baseCommand(
         return prepareQuickPickItems(
           repositoryType,
           formatters,
+          remoteURLMapping,
           commandName,
           relativeFilePath,
           selectedLines,
@@ -264,6 +270,7 @@ export function formatRemotes(remotes: string[]): string[] {
           rem
             .replace(/^.+@/, "")
             .replace(/\.git(\b|$)/, "")
+            .replace(/:\d{1,4}/, "") // <- remove port
             .replace(/:/g, "/")
         );
       } else if (rem.match(/^ftps?:/)) {
@@ -353,6 +360,7 @@ export function getCurrentRevision(exec, projectPath: string): Promise<string> {
 export function formatQuickPickItems(
   repositoryType: string,
   formatters: Formatters,
+  remoteURLMappings: RemoteURLMappings,
   commandName: string,
   relativeFilePath: string,
   lines: SelectedLines,
@@ -366,6 +374,7 @@ export function formatQuickPickItems(
         remote,
         branch,
         relativeFilePath,
+        remoteURLMappings,
         lines
       ),
     }))
@@ -388,6 +397,7 @@ export function formatQuickPickItems(
 export function prepareQuickPickItems(
   repositoryType: string,
   formatters: Formatters,
+  remoteURLMappings: RemoteURLMappings,
   commandName: string,
   relativeFilePath: string,
   lines: SelectedLines,
@@ -401,6 +411,7 @@ export function prepareQuickPickItems(
     return formatQuickPickItems(
       repositoryType,
       formatters,
+      remoteURLMappings,
       commandName,
       relativeFilePath,
       lines,
@@ -421,6 +432,7 @@ export function prepareQuickPickItems(
       formatQuickPickItems(
         repositoryType,
         formatters,
+        remoteURLMappings,
         commandName,
         relativeFilePath,
         lines,

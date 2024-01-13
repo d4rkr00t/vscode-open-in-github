@@ -30,30 +30,44 @@
   "main": "./out/extension",
   "icon": "assets/icon.jpg",
   "contributes": {
+    "menus": {
+      "editor/context": [
+        {
+          "command": "openInGithub.openInGitHubFile",
+          "group": "OpenInGithub",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "openInGithub.copyInGitHubFile",
+          "group": "OpenInGithub",
+          "when": "editorTextFocus"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "openInGithub.openInGitHubFile",
-        "title": "Open In GitHub: File"
+        "title": "Open In GitHub: Open File URL"
       },
       {
         "command": "openInGithub.openInGitHubBlame",
-        "title": "Open In GitHub: Blame"
+        "title": "Open In GitHub: Open Blame URL"
       },
       {
         "command": "openInGithub.openInGitHubHistory",
-        "title": "Open In GitHub: History"
+        "title": "Open In GitHub: Open History URL"
       },
       {
         "command": "openInGithub.copyInGitHubFile",
-        "title": "Copy GitHub URL: File"
+        "title": "Open in GitHub: Copy File URL"
       },
       {
         "command": "openInGithub.copyInGitHubBlame",
-        "title": "Copy GitHub URL: Blame"
+        "title": "Open in GitHub: Copy Blame URL"
       },
       {
         "command": "openInGithub.copyInGitHubHistory",
-        "title": "Copy GitHub URL: History"
+        "title": "Open in GitHub: Copy History URL"
       }
     ],
     "configuration": {

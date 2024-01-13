@@ -28,7 +28,7 @@
   },
   "bugs": "https://github.com/d4rkr00t/vscode-open-in-github/issues",
   "main": "./out/extension.js",
-  "icon": "assets/icon.jpg",
+  "icon": "./assets/icon.jpg",
   "contributes": {
     "menus": {
       "editor/context": [

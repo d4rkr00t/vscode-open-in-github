@@ -6,7 +6,7 @@
   "version": "1.17.2",
   "publisher": "sysoev",
   "engines": {
-    "vscode": "^1.71.0"
+    "vscode": "^1.75.0"
   },
   "files": [
     "./out"
@@ -29,14 +29,6 @@
   "bugs": "https://github.com/d4rkr00t/vscode-open-in-github/issues",
   "main": "./out/extension",
   "icon": "assets/icon.jpg",
-  "activationEvents": [
-    "onCommand:openInGithub.openInGitHubFile",
-    "onCommand:openInGithub.openInGitHubBlame",
-    "onCommand:openInGithub.openInGitHubHistory",
-    "onCommand:openInGithub.copyInGitHubFile",
-    "onCommand:openInGithub.copyInGitHubBlame",
-    "onCommand:openInGithub.copyInGitHubHistory"
-  ],
   "contributes": {
     "commands": [
       {
@@ -136,7 +128,7 @@
     "@types/mocha": "^9.1.1",
     "@types/node": "^16.x",
     "@types/ramda": "^0.25.41",
-    "@types/vscode": "^1.71.0",
+    "@types/vscode": "^1.75.0",
     "@vscode/test-electron": "^2.1.5",
     "esbuild": "^0.15.6",
     "glob": "^8.0.3",

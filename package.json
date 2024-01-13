@@ -27,7 +27,7 @@
     "url": "https://github.com/d4rkr00t/vscode-open-in-github.git"
   },
   "bugs": "https://github.com/d4rkr00t/vscode-open-in-github/issues",
-  "main": "./out/extension",
+  "main": "./out/extension.js",
   "icon": "assets/icon.jpg",
   "contributes": {
     "menus": {

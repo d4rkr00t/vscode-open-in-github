@@ -80,6 +80,12 @@
           "default": "master",
           "description": "Controls which branch will be treated as default."
         },
+        "openInGitHub.alwaysUseDefaultBranch": {
+          "scope": "resource",
+          "type": "boolean",
+          "default": false,
+          "description": "When enabled skips branch detection and always uses default branch."
+        },
         "openInGitHub.defaultRemote": {
           "scope": "resource",
           "type": "string",

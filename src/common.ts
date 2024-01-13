@@ -57,6 +57,10 @@ export function baseCommand(
     workspace
       .getConfiguration("openInGitHub", fileUri)
       .get<string>("defaultRemote") || "origin";
+  const alwaysUseDefaultBranch =
+    workspace
+      .getConfiguration("openInGitHub", fileUri)
+      .get<string>("alwaysUseDefaultBranch") || false;
   const maxBuffer =
     workspace
       .getConfiguration("openInGithub", fileUri)
@@ -75,12 +79,16 @@ export function baseCommand(
   return getRepoRoot(exec, projectPath).then((repoRootPath) => {
     const relativeFilePath = path.relative(repoRootPath, filePath);
 
-    return getBranches(
-      exec,
-      projectPath,
-      defaultBranch,
-      maxBuffer,
-      excludeCurrentRevision
+    return (
+      alwaysUseDefaultBranch
+        ? Promise.resolve([defaultBranch])
+        : getBranches(
+            exec,
+            projectPath,
+            defaultBranch,
+            maxBuffer,
+            excludeCurrentRevision
+          )
     )
       .then((branches) => {
         const getRemotesPromise = getRemotes(

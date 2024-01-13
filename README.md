@@ -47,6 +47,10 @@ Add these lines to the workspace settings:
   "openInGitHub.defaultRemote": "origin",
   "openInGithub.maxBuffer": 512000,
 
+  
+  // When enabled skips branch detection and always uses default branch.
+  "openInGitHub.alwaysUseDeafultBranch": false,
+
   // Determines whether to disable URL suggestions for the current revision (commit SHA)
   "openInGitHub.excludeCurrentRevision": false,
 

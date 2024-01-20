@@ -173,7 +173,7 @@
     }
   },
   "dependencies": {
-    "clipboardy": "^2.3.0",
+    "clipboardy": "^3.0.0",
     "open": "^8.4.2",
     "ramda": "^0.25.0"
   }

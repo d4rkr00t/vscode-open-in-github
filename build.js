@@ -6,7 +6,7 @@ require("esbuild")
     entryPoints: ["./src/extension.ts"],
     bundle: true,
     outdir: "./out",
-    external: ["vscode", "open"],
+    external: ["vscode"],
     format: "cjs",
     sourcemap: !production,
     minify: production,

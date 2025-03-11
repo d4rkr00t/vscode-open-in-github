@@ -2,9 +2,9 @@ import { window, workspace, QuickPickItem } from "vscode";
 
 const exec = require("child_process").exec;
 const path = require("path");
-const open = require("open");
 const R = require("ramda");
 const clipboardy = require("clipboardy");
+import * as vscode from "vscode";
 
 export const BRANCH_URL_SEP = " — ";
 
@@ -537,7 +537,10 @@ export function showQuickPickWindow(quickPickList: QuickPickItem[]) {
  */
 export async function openQuickPickItem(item?: QuickPickItem) {
   if (!item) return;
-  return await open((item as any).url);
+  return await vscode.commands.executeCommand(
+    "vscode.open",
+    vscode.Uri.parse((item as any).url)
+  );
 }
 
 /**

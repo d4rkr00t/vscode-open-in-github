@@ -76,6 +76,7 @@ suite("#formatRemotes", () => {
     "ftp://host.xz/path/to/repo.git/",
     "https://user@github.com/some/repo.git",
     "ssh://git@bitbucket-mirror-au.internal.atlassian.com:7999/confcloud/confluence-frontend.git",
+    "git@github.com:42example/example-repo.git",
     "../other",
   ];
 
@@ -97,6 +98,7 @@ suite("#formatRemotes", () => {
       "http://host.xz/path/to/repo.git",
       "https://github.com/some/repo",
       "https://bitbucket-mirror-au.internal.atlassian.com/confcloud/confluence-frontend",
+      "https://github.com/42example/example-repo",
       undefined,
     ]);
   });

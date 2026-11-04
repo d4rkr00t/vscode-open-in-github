@@ -278,7 +278,7 @@ export function formatRemotes(remotes: string[]): string[] {
           rem
             .replace(/^.+@/, "")
             .replace(/\.git(\b|$)/, "")
-            .replace(/:\d{1,4}/, "") // <- remove port
+            .replace(/:(\d{1,4})\//, "/") // <- remove port
             .replace(/:/g, "/")
         );
       } else if (rem.match(/^ftps?:/)) {
